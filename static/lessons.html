@@ -19,6 +19,8 @@
 			border: 1px solid #7e7e7e;
 			text-align: center;
 			font-size: 2em;
+			background: rgb(240, 240, 240);
+			border: 1px solid rgb(221, 221, 221);
 		}
 
 		/* Two light gray things on main page
@@ -61,22 +63,57 @@
 
 	  	<!-- Section copied from generated index page -->
 	  	<div id="app">
-		  	<div id="REPL">
-		  		<div id="visualizer">
-		  			<span style="font-size: 1.2em">Number of qubits: </span><input id="qubits" size="1" value="1" type="text">
-		  		</div><!--
-		  	 --><div style="position:relative;" id="editor">
-			  		<div id="reference"></div><!--
-			  	 --><div id="textInput" class=" ace_editor ace-tm ace_nobold"><textarea class="ace_text-input" wrap="off" spellcheck="false" style="bottom: 442px; height: 16px; width: 7px; right: 412px;"></textarea><div class="ace_gutter"><div class="ace_layer ace_gutter-layer ace_folding-enabled" style="margin-top: 0px; height: 490px; width: 22px;"><div class="ace_gutter-cell " style="height:16px;">1</div></div><div class="ace_gutter-active-line" style="top: 0px; height: 16px;"></div></div><div class="ace_scroller" style="left: 22px; right: 0px;"><div class="ace_content" style="margin-top: 0px; width: 423px; height: 490px;"><div class="ace_layer ace_print-margin-layer"><div class="ace_print-margin" style="left: 564px; visibility: visible;"></div></div><div class="ace_layer ace_marker-layer"><div class="ace_active-line" style="height:16px;top:0px;left:0;right:0;"></div></div><div class="ace_layer ace_text-layer" style="padding: 0px 4px;"><div class="ace_line" style="height:16px"></div></div><div class="ace_layer ace_marker-layer"></div><div class="ace_layer ace_cursor-layer ace_hidden-cursors"><div class="ace_cursor" style="left: 4px; top: 0px; width: 7px; height: 16px;"></div></div></div></div><div style="height: auto; width: auto; top: -100px; left: -100px; visibility: hidden; position: fixed; overflow: visible; white-space: nowrap;">X</div><div class="ace_scrollbar" style="width: 20px; height: 458px;"><div class="ace_scrollbar-inner" style="height: 16px;"></div></div><div class="ace_gutter-tooltip" style="display: none;"></div></div><!--
-			  	 --><button id="evaluate" style="position: absolute; bottom: 0; right: 0; z-index: 10; border: 0; cursor: pointer;">Evaluate</button>
-			  	</div>
+	  		<div id="REPL"><!--
+	  			--><div style="position:relative;" id="editor">
+		  		<div id="reference">
+			  	</div><!--
+			  	--><div id="textInput" class=" ace_editor ace-tm ace_nobold">
+				  	<textarea class="ace_text-input" wrap="off" spellcheck="false" style="bottom: 442px; height: 16px; width: 7px; right: 412px;"></textarea>
+				  	<div class="ace_gutter">
+				  		<div class="ace_layer ace_gutter-layer ace_folding-enabled" style="margin-top: 0px; height: 490px; width: 22px;">
+				  			<div class="ace_gutter-cell " style="height:16px;">1</div>
+				  		</div>
+				  		<div class="ace_gutter-active-line" style="top: 0px; height: 16px;">
+				  		</div>
+				  	</div>
+				  	<!-- <div class="ace_scroller" style="left: 22px; right: 0px;">
+				  		<div class="ace_content" style="margin-top: 0px; width: 423px; height: 490px;">
+				  			<div class="ace_layer ace_print-margin-layer">
+				  				<div class="ace_print-margin" style="left: 564px; visibility: visible;">
+				  				</div>
+				  			</div>
+				  			<div class="ace_layer ace_marker-layer">
+				  				<div class="ace_active-line" style="height:16px;top:0px;left:0;right:0;">
+				  				</div>
+				  			</div>
+				  			<div class="ace_layer ace_text-layer" style="padding: 0px 4px;">
+				  				<div class="ace_line" style="height:16px"></div>
+				  			</div>
+				  			<div class="ace_layer ace_marker-layer"></div>
+				  			<div class="ace_layer ace_cursor-layer ace_hidden-cursors">
+				  				<div class="ace_cursor" style="left: 4px; top: 0px; width: 7px; height: 16px;">
+				  				</div>
+				  			</div>
+				  		</div>
+				  	</div> -->
+				  	<div style="height: auto; width: auto; top: -100px; left: -100px; visibility: hidden; position: fixed; overflow: visible; white-space: nowrap;">
+				  		X
+				  	</div>
+				  	<!-- <div class="ace_scrollbar" style="width: 20px; height: 458px;">
+				  		<div class="ace_scrollbar-inner" style="height: 16px;"></div>
+				  	</div>
+				  	<div class="ace_gutter-tooltip" style="display: none;"></div> -->
+				</div><!--
+				--><button id="evaluate" style="position: absolute; bottom: 0; right: 0; z-index: 10; border: 0; cursor: pointer;">Evaluate</button>
+				</div>
 			</div>
-			<div id="diagram">
-				<div id="partsBin"></div><!--
-			 --><div id="circuit"></div>
-			</div>
-	    </div>
-    <!-- End of copied section -->
+			<!-- <div id="diagram">
+				<div id="partsBin"></div> -->
+				<!---->
+				<!-- <div id="circuit"></div>
+			</div> -->
+		</div>
+    	<!-- End of copied section -->
 
 	  	<div class="float">
 	  		aslfjkasl;dfjka;s ldjf;asdj kfas l;dkfj
