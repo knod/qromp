@@ -104,7 +104,7 @@ var textEditor = {
 		else if (key.keyCode == 8) {
 
 			// Get the cursor position. Sources (1)
-			var cursorPos = $textRow.prop("selectionStart");
+			var cursorPos = $textRow.prop("selectionEnd");
 
 			// Do not remove the first row
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
