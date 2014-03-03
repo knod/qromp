@@ -10,12 +10,8 @@
 * 4. http://stackoverflow.com/questions/3597611/javascript-how-to-remove-characters-from-end-of-string
 * 
 * ToDo:
-* - Fix delete at beginning of line deletes empty row,
-* goes to the end of the now prev textarea, *and*
-* deletes the last letter of that textarea.
-* - [DONE] Fix pressing enter in the middle of text doesn't
-* make a new row populated with that text
-* - Fix deleting the beginning of text doesn't move the
+* - [I got an error, __ is not a a DOM element, can't
+* recreate it. Guess it's done?] Fix deleting the beginning of text doesn't move the
 * text up to the previous row
 * - Figure out why .num-row height doesn't change when
 * pasting text or deleting selected text. (on keyup?)
@@ -29,6 +25,11 @@
 * "Evaluate" has been pressed.
 * 
 * DONE:
+* - [DONE] Fix delete at beginning of line deletes empty
+* row, goes to the end of the now prev textarea, *and*
+* deletes the last letter of that textarea.
+* - [DONE] Fix pressing enter in the middle of text doesn't
+* make a new row populated with that text
 * - [DONE] Fix #1 Cannot delete linebreak for non-blank lines
 * where if line 2 has text and line one is empty, you
 * can't go to the beginning of line 2 and press delete
@@ -108,26 +109,24 @@ var textEditor = {
 			// Do not remove the first row
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
 				// If there's no text in the row
-				if (!$textRow.val()) {
-					// Move the cursor to the previous input field
-					$textRow.prev().focus();
+				if (!$textRow.val() || !cursorPos) {
 					// Run a function in texteditor.js that removes a
 					// line and updates the row numbers
 					textEditor.removeRow($textRow);
 					// Now won't delete first letter of prev line
 					key.preventDefault();
 				}
-				// Otherwise, if the cursor is at the
-				// beginning of a textarea and the prev row
-				// is empty (check for selectionEnd just
-				// in case they have all the text selected
-				// and want to just delete that)
-				else if (!cursorPos && $textRow.prev().val() == "") {
-					// Don't delete first letter of prev line
-					key.preventDefault();
-					// Delete the previous row
-					textEditor.removeRow($textRow.prev());
-				}
+				// // Otherwise, if the cursor is at the
+				// // beginning of a textarea and the prev row
+				// // is empty (check for selectionEnd just
+				// // in case they have all the text selected
+				// // and want to just delete that)
+				// else if (!cursorPos) {
+				// 	// Don't delete first letter of prev line
+				// 	key.preventDefault();
+				// 	// Delete the previous row
+				// 	textEditor.removeRow($textRow);
+				// }
 			}
 		}
 
@@ -155,6 +154,7 @@ var textEditor = {
 					.focus()
 					// Set cursor position to end of prev textarea.
 					// Sources (2)
+					// This doesn't do anything, no such thing
 					.prop("setSelectionRange", textLength, textLength);
 
 					// For when textarea has/had multiple lines
@@ -183,6 +183,7 @@ var textEditor = {
 					.focus()
 					// Set cursor position to start of next textarea.
 					// Sources (2)
+					// this doesn't either, need .setSel... on DOM
 					.prop("setSelectionRange", 0, 0);
 
 					// For when textarea has/had multiple lines
@@ -199,15 +200,15 @@ var textEditor = {
 		Adds divs below current input, one for the
 		rows, one for the text, then numbers the
 		rows appropriately. Moves curosr to the new
-		input field
+		input field. Moves any text in the current
+		field to the new field too.
 		*/
 
 		// Get the value of the current row, but
-		// only the stuff after the cursor
+		// only the stuff after the cursor, Sources (3)
 		var cursorPos = $textRow.prop("selectionStart");
-		// Get the text from the cursor to the end, Sources (3)
 		var lastPart = $textRow.val().substr(cursorPos);
-		// Delete that text from $newTextRow, Sources (4)
+		// Delete that text from $textRow, Sources (4)
 		$textRow.val($textRow.val().substring(0, cursorPos));
 
 		// Create the .num-row div
@@ -246,12 +247,28 @@ var textEditor = {
 		to the previous input field.
 		*/
 
-		// Remove the .num-row in this .text-row's data value
+		// Assign a var, using this a lot
+		var $prevArea = $textRow.prev();
+
+		// Get the value of the current row, Sources (3)
+		var areaText = $textRow.val();
+		// Move the cursor to the previous input field
+		$prevArea.focus();
+		// Remember this cursor position
+		var cursorPos = $prevArea.prop("selectionStart");
+
+		// Append the previous text to the now current box
+		$prevArea.val("" + $prevArea.val() + areaText);
+		// Put cursor back at it's position (doesn't do it auto)
+		$prevArea[0].setSelectionRange(cursorPos, cursorPos);
+
+		// Remove the current box and its .num-row
 		$textRow.data("numRow").remove();
-		// Remove this .text-row
 		$textRow.remove();
 		// Update the row numbers
 		textEditor.updateNums();
+		// I got an error, __ is not a a DOM element,
+		// can't recreate it. Guess it's done?
 	},
 
 	updateNums: function () {
