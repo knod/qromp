@@ -11,8 +11,8 @@
 * 
 * ToDo:
 * - Fix delete at beginning of line deletes empty row,
-* goes to the end of the now prev textarea *and* first
-* letter of that textarea is deleted.
+* goes to the end of the now prev textarea, *and*
+* deletes the last letter of that textarea.
 * - Fix pressing enter in the middle of text doesn't
 * make a new row populated with that text
 * - Fix deleting the beginning of text doesn't move the
@@ -204,7 +204,7 @@ var textEditor = {
 		// Get the value of the current row, but
 		// only the stuff after the cursor
 		var cursorPos = $textRow.prop("selectionStart");
-		// Sources (3)
+		// Get the text from the cursor to the end, Sources (3)
 		var lastPart = $textRow.val().substr(cursorPos);
 		// Delete that text from $newTextRow, Sources (4)
 		$textRow.val($textRow.val().substring(0, cursorPos));
