@@ -95,7 +95,7 @@ var textEditor = {
 			// the cursor, and update the row numbers
 			textEditor.addRow($textRow);
 			// Don't make a new paragraph
-			key.stopPropagation();
+			// key.stopPropagation(); No problems without this...
 			key.preventDefault();
 		}
 
@@ -113,7 +113,7 @@ var textEditor = {
 					// line and updates the row numbers
 					textEditor.removeRow($textRow);
 					// Don't delete more than you should or something
-					key.stopPropagation();
+					// key.stopPropagation(); No problems without this...
 					// Just had to .preventDefault in this scope!
 					// Now won't delete first letter of prev line
 					key.preventDefault();
@@ -157,7 +157,7 @@ var textEditor = {
 					.prop("setSelectionRange", textLength, textLength);
 
 					// For when textarea has/had multiple lines
-					key.stopPropagation();
+					// key.stopPropagation(); No problems without this...
 					key.preventDefault();
 				}
 			}
@@ -185,7 +185,7 @@ var textEditor = {
 					.prop("setSelectionRange", 0, 0);
 
 					// For when textarea has/had multiple lines
-					key.stopPropagation();
+					// key.stopPropagation(); No problems without this...
 					key.preventDefault();
 				}
 			}
@@ -217,7 +217,7 @@ var textEditor = {
 		// Store the .num-row as the .text-row's data value
 		.data("numRow", $newNumRow);
 
-		// Append new text input under this text input
+		// Append new textarea under this textarea
 		$textRow.after($newTextRow);
 		// Append new .num-row using the current .text-row's data
 		$textRow.data("numRow").after($newNumRow);
