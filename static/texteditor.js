@@ -125,50 +125,52 @@ var textEditor = {
 			// If this isn't the first row
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
 
-				// Get the cursor position. Sources (1)
-				var cursorPos = $textRow.prop("selectionStart");
+				// // Get the cursor position. Sources (1)
+				// var cursorPos = $textRow.prop("selectionStart");
 
-				// If the cursor is at the start of the textarea
-				if (!cursorPos) {
+				// // If the cursor is at the start of the textarea
+				// if (!cursorPos) {
 
-					// Get the previous .text-row element
-					// for some reason this doesn't work
-					// Comes out as undefined
-					var $prevTextRow = $textRow.prev();
+					// // Get the previous .text-row element
+					// // for some reason this doesn't work
+					// // Comes out as undefined
+					// var $prevTextRow = $textRow.prev();
 
-					// Get the length of the prev textarea
-					var textLength = $textRow.prev().val().length;
+					// // Get the length of the prev textarea
+					// var textLength = $textRow.prev().val().length;
 					// Move the cursor to the prev input field
 					$textRow.prev().focus()
 
 					// For when textarea has/had multiple lines
 					// key.stopPropagation(); No problems without this...
+					// Won't auto travel to start of new area
 					key.preventDefault();
-				}
+				// }
 			}
 		}
 
 		// DOWN ARROW
 		else if (key.keyCode == 40) {
-			// If this isn't the last row
+			// If this isn't the last textarea
 			if ( $(".text-row").index($textRow) !=
 				($(".text-row").length - 1) ) {
 
-				// Get the length of the text in the textarea
-				var textLength = $textRow.val().length;
-				// Get the cursor position. Sources (1)
-				// Selection end in case they had something selected
-				var cursorPos = $textRow.prop("selectionEnd");
+				// // Get the length of the text in the textarea
+				// var textLength = $textRow.val().length;
+				// // Get the cursor position. Sources (1)
+				// // Selection end in case they had something selected
+				// var cursorPos = $textRow.prop("selectionEnd");
 
-				// If the cursor is at the end of the text area
-				if (cursorPos == textLength) {
+				// // If the cursor is at the end of the text area
+				// if (cursorPos == textLength) {
 					// Move the cursor to the next input field
 					$textRow.next().focus()
 
 					// For when textarea has/had multiple lines
 					// key.stopPropagation(); No problems without this...
+					// Won't auto travel to end of new area
 					key.preventDefault();
-				}
+				// }
 			}
 		}
 	},
