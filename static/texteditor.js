@@ -13,7 +13,7 @@
 * - Fix delete at beginning of line deletes empty row,
 * goes to the end of the now prev textarea, *and*
 * deletes the last letter of that textarea.
-* - Fix pressing enter in the middle of text doesn't
+* - [DONE] Fix pressing enter in the middle of text doesn't
 * make a new row populated with that text
 * - Fix deleting the beginning of text doesn't move the
 * text up to the previous row
@@ -109,12 +109,11 @@ var textEditor = {
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
 				// If there's no text in the row
 				if (!$textRow.val()) {
+					// Move the cursor to the previous input field
+					$textRow.prev().focus();
 					// Run a function in texteditor.js that removes a
 					// line and updates the row numbers
 					textEditor.removeRow($textRow);
-					// Don't delete more than you should or something
-					// key.stopPropagation(); No problems without this...
-					// Just had to .preventDefault in this scope!
 					// Now won't delete first letter of prev line
 					key.preventDefault();
 				}
@@ -124,6 +123,8 @@ var textEditor = {
 				// in case they have all the text selected
 				// and want to just delete that)
 				else if (!cursorPos && $textRow.prev().val() == "") {
+					// Don't delete first letter of prev line
+					key.preventDefault();
 					// Delete the previous row
 					textEditor.removeRow($textRow.prev());
 				}
@@ -245,8 +246,6 @@ var textEditor = {
 		to the previous input field.
 		*/
 
-		// Move the cursor to the previous input field
-		$textRow.prev().focus();
 		// Remove the .num-row in this .text-row's data value
 		$textRow.data("numRow").remove();
 		// Remove this .text-row
