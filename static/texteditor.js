@@ -285,7 +285,7 @@ var textEditor = {
 		// Remove $textArea's color
 		$textArea.css("background", "");
 		// Remove color of $textArea's numRow data value
-		$textArea.data("numRow").css("background", "");
+		$textArea.data("numRow").css("background", "none");
 	},
 
 	resizeTextArea: function ($elemToSize) {
