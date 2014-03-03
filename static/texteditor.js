@@ -7,6 +7,7 @@
 * 1. http://stackoverflow.com/questions/7745867/how-do-you-get-the-cursor-position-in-a-textarea
 * 2. http://stackoverflow.com/questions/6683046/how-do-i-move-the-cursor-to-the-front-of-a-textbox-which-has-text-in-it
 * 3. http://stackoverflow.com/questions/1707527/cut-out-part-of-a-string (ignore w3schools)
+* 4. http://stackoverflow.com/questions/3597611/javascript-how-to-remove-characters-from-end-of-string
 * 
 * ToDo:
 * - Fix delete at beginning of line deletes empty row,
@@ -205,7 +206,7 @@ var textEditor = {
 		var cursorPos = $textRow.prop("selectionStart");
 		// Sources (3)
 		var lastPart = $textRow.val().substr(cursorPos);
-		// Delete that text from $newTextRow
+		// Delete that text from $newTextRow, Sources (4)
 		$textRow.val($textRow.val().substring(0, cursorPos));
 
 		// Create the .num-row div
