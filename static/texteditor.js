@@ -10,9 +10,6 @@
 * 4. http://stackoverflow.com/questions/3597611/javascript-how-to-remove-characters-from-end-of-string
 * 
 * ToDo:
-* - [I got an error, __ is not a a DOM element, can't
-* recreate it. Guess it's done?] Fix deleting the beginning of text doesn't move the
-* text up to the previous row
 * - Figure out why .num-row height doesn't change when
 * pasting text or deleting selected text. (on keyup?)
 * - [Not done, somewhat better somehow] Figure out why
@@ -25,6 +22,9 @@
 * "Evaluate" has been pressed.
 * 
 * DONE:
+* - [I got an error, __ is not a DOM element, can't
+* recreate it. Guess it's done?] Fix deleting the beginning
+* of text doesn't move the text up to the previous row
 * - [DONE] Fix delete at beginning of line deletes empty
 * row, goes to the end of the now prev textarea, *and*
 * deletes the last letter of that textarea.
@@ -110,23 +110,13 @@ var textEditor = {
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
 				// If there's no text in the row
 				if (!$textRow.val() || !cursorPos) {
-					// Run a function in texteditor.js that removes a
-					// line and updates the row numbers
+					// Removes a line, moves the text there to
+					// the prev line, cursor to right place,
+					// and updates the row numbers
 					textEditor.removeRow($textRow);
 					// Now won't delete first letter of prev line
 					key.preventDefault();
 				}
-				// // Otherwise, if the cursor is at the
-				// // beginning of a textarea and the prev row
-				// // is empty (check for selectionEnd just
-				// // in case they have all the text selected
-				// // and want to just delete that)
-				// else if (!cursorPos) {
-				// 	// Don't delete first letter of prev line
-				// 	key.preventDefault();
-				// 	// Delete the previous row
-				// 	textEditor.removeRow($textRow);
-				// }
 			}
 		}
 
@@ -148,14 +138,8 @@ var textEditor = {
 
 					// Get the length of the prev textarea
 					var textLength = $textRow.prev().val().length;
-
-					$textRow.prev()
 					// Move the cursor to the prev input field
-					.focus()
-					// Set cursor position to end of prev textarea.
-					// Sources (2)
-					// This doesn't do anything, no such thing
-					.prop("setSelectionRange", textLength, textLength);
+					$textRow.prev().focus()
 
 					// For when textarea has/had multiple lines
 					// key.stopPropagation(); No problems without this...
@@ -178,13 +162,8 @@ var textEditor = {
 
 				// If the cursor is at the end of the text area
 				if (cursorPos == textLength) {
-					$textRow.next()
 					// Move the cursor to the next input field
-					.focus()
-					// Set cursor position to start of next textarea.
-					// Sources (2)
-					// this doesn't either, need .setSel... on DOM
-					.prop("setSelectionRange", 0, 0);
+					$textRow.next().focus()
 
 					// For when textarea has/had multiple lines
 					// key.stopPropagation(); No problems without this...
@@ -194,7 +173,7 @@ var textEditor = {
 		}
 	},
 
-	addRow: function ($textRow) {
+	addRow: function ($textArea) {
 		/* (element) -> None
 
 		Adds divs below current input, one for the
@@ -206,10 +185,10 @@ var textEditor = {
 
 		// Get the value of the current row, but
 		// only the stuff after the cursor, Sources (3)
-		var cursorPos = $textRow.prop("selectionStart");
-		var lastPart = $textRow.val().substr(cursorPos);
-		// Delete that text from $textRow, Sources (4)
-		$textRow.val($textRow.val().substring(0, cursorPos));
+		var cursorPos = $textArea.prop("selectionStart");
+		var lastPart = $textArea.val().substr(cursorPos);
+		// Delete that text from $textArea, Sources (4)
+		$textArea.val($textArea.val().substring(0, cursorPos));
 
 		// Create the .num-row div
 		var $newNumRow = $("<div class='num-row'></div>");
@@ -220,9 +199,9 @@ var textEditor = {
 		.data("numRow", $newNumRow);
 
 		// Append new textarea under this textarea
-		$textRow.after($newTextRow);
+		$textArea.after($newTextRow);
 		// Append new .num-row using the current .text-row's data
-		$textRow.data("numRow").after($newNumRow);
+		$textArea.data("numRow").after($newNumRow);
 
 		// Expands the input textarea size to show all text
 		textEditor.resizeTextArea($newTextRow);
@@ -239,7 +218,7 @@ var textEditor = {
 		$newTextRow.focus();
 	},
 
-	removeRow: function ($textRow) {
+	removeRow: function ($textArea) {
 		/* (element) -> None
 
 		Deletes this input and it's matching .num-row,
@@ -248,10 +227,10 @@ var textEditor = {
 		*/
 
 		// Assign a var, using this a lot
-		var $prevArea = $textRow.prev();
+		var $prevArea = $textArea.prev();
 
 		// Get the value of the current row, Sources (3)
-		var areaText = $textRow.val();
+		var areaText = $textArea.val();
 		// Move the cursor to the previous input field
 		$prevArea.focus();
 		// Remember this cursor position
@@ -263,11 +242,11 @@ var textEditor = {
 		$prevArea[0].setSelectionRange(cursorPos, cursorPos);
 
 		// Remove the current box and its .num-row
-		$textRow.data("numRow").remove();
-		$textRow.remove();
+		$textArea.data("numRow").remove();
+		$textArea.remove();
 		// Update the row numbers
 		textEditor.updateNums();
-		// I got an error, __ is not a a DOM element,
+		// I got an error, __ is not a DOM element,
 		// can't recreate it. Guess it's done?
 	},
 
@@ -284,29 +263,29 @@ var textEditor = {
 			});
 	},
 
-	activateRow: function ($textRow) {
+	activateRow: function ($textArea) {
 		/* (element) -> None
 
-		Change the colors of $textRow to the
+		Change the colors of $textArea's row to the
 		active colors.
 		*/
 
-		// Change $textRow's color
-		$textRow.css("background", this.activeTextRow);
-		// Change color of $textRow's numRow data value
-		$textRow.data("numRow").css("background", this.activeNumRow);
+		// Change $textArea's color
+		$textArea.css("background", this.activeTextRow);
+		// Change color of $textArea's numRow data value
+		$textArea.data("numRow").css("background", this.activeNumRow);
 	},
 
-	deactivateRow: function ($textRow) {
+	deactivateRow: function ($textArea) {
 		/* (element) -> None
 
-		Remove the colors of $textRow.
+		Remove the colors of $textArea's row.
 		*/
 
-		// Remove $textRow's color
-		$textRow.css("background", "");
-		// Remove color of $textRow's numRow data value
-		$textRow.data("numRow").css("background", "");
+		// Remove $textArea's color
+		$textArea.css("background", "");
+		// Remove color of $textArea's numRow data value
+		$textArea.data("numRow").css("background", "");
 	},
 
 	resizeTextArea: function ($elemToSize) {
@@ -370,7 +349,6 @@ var textEditor = {
 		$textAreas.each(function (ii) {
 			// Make loop faster
 			var $this = $(this);
-
 			// Append the value of this textarea to the string
 			editorStr += $this.val();
 			// Append a new line character
