@@ -8,6 +8,7 @@
 * 2. http://stackoverflow.com/questions/6683046/how-do-i-move-the-cursor-to-the-front-of-a-textbox-which-has-text-in-it
 * 3. http://stackoverflow.com/questions/1707527/cut-out-part-of-a-string (ignore w3schools)
 * 4. http://stackoverflow.com/questions/3597611/javascript-how-to-remove-characters-from-end-of-string
+* 5. http://www.bennadel.com/blog/2159-Using-Slice-Substring-And-Substr-In-Javascript.htm
 * 
 * ToDo:
 * - Figure out why .num-row height doesn't change when
@@ -189,8 +190,8 @@ var textEditor = {
 		// only the stuff after the cursor, Sources (3)
 		var cursorPos = $textArea.prop("selectionStart");
 		var lastPart = $textArea.val().substr(cursorPos);
-		// Delete that text from $textArea, Sources (4)
-		$textArea.val($textArea.val().substring(0, cursorPos));
+		// Delete that text from $textArea, Sources (4, 5)
+		$textArea.val($textArea.val().substr(0, cursorPos));
 
 		// Create the .num-row div
 		var $newNumRow = $("<div class='num-row'></div>");
