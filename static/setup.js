@@ -75,33 +75,22 @@ $(document).ready(function() {
 
 	// KNOD:
 	// *** TEXT EDITOR *** \\
+
 	// Create the first editor row
 	textEditor.firstRow();
 
+	$("#text-areas")
 	// *Has* to be .on, *has* to be delegation
 	// Make a tutorial about that somewhere
-	// Depending on what key is pressed in an input field
-	$("#text-areas")
-	.on("keydown", ".text-row", function (key) {
-
-		// Identify this .text-row
-		var $this = $(this);
-		// Affect input fields
-		textEditor.keyFilter(key, $this);
-	})
-	.on("keyup", ".text-row", function (key) {
-		// Helps resizing after deleting section or pasting,
-		// esp with clicking out of the area after
-		// Not completely though
-		textEditor.resizeRow($(this));
-	})
-	.on("focus", ".text-row", function () {
-		// Color the focused row the active colors
-		textEditor.activateRow($(this));
-	})
-	.on("blur", ".text-row", function () {
-		// Remove the color from the unfocused rows
-		textEditor.deactivateRow($(this));
-	})
+	// Depending on what key is pressed in a .text-row field
+	.on("keydown", ".text-row", function (key) {textEditor.keyFilter(key, $(this));})
+	// Helps a bit withresizing after deleting section or
+	// pasting, esp with clicking out of the area after
+	.on("keyup", ".text-row", function (key) {textEditor.resizeRow($(this));})
+	// Color the focused row the active colors
+	.on("focus", ".text-row", function () {textEditor.activateRow($(this));})
+	// Remove the color from the unfocused rows. Look
+	// into keeping last active row colored when none are active
+	.on("blur", ".text-row", function () {textEditor.deactivateRow($(this));})
 	;
 });
