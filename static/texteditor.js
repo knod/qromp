@@ -135,97 +135,31 @@ var textEditor = {
 		}
 
 
+// Dood
+// http://jsfiddle.net/r7JBe/2/
+// Way to count the number of characters actually in a line in text area
+// Comentated and adjusted: http://jsfiddle.net/r7JBe/39/
+// For mine, I will want this to be a fake box, so do the newArea thing,
+// but don't make the current textarea into a new area
+// So:
+		// When up arrow is pressed
+			// Get the cursor position
 
+			// Make a fake textbox
+			// Turn it into paragraphs instead of wrapped lines
+			// Get start and end indexes of the first line (the
+			// paragraph problem shouldn't be a problem here)
+				// If cursor is within this range, focus on prev row
+				// Prevent default
 
-//http://stackoverflow.com/questions/1760629/how-to-get-number-of-rows-in-textarea
-// Ha!!! Move the cursor, see if new cursor pos is at the start
-// or the end, if not, leave it as is, if so, move to appropriate line
-
-// Two possibleways to go about this that I can see right
-// now - wordwrap and triggering an key event
-	// Wordwrap would detect scrollheight change and make
-	// new divs or take them away depending on the change
-	// This would, I think, involve ghost divs.
-
-	// Triggering the key event we've already worked out,
-	// maybe try that first with http://keithcirkel.co.uk/jwerty/
-
-
-// Detecting wordwrap
-
-
-
-// // http://keithcirkel.co.uk/jwerty/
-// 		// UP ARROW
-// 		// if up arrow
-// 		else if (thisKeyCode == 38) {
-// 			// if not the first textarea
-// 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
-// 				// If this is the 1st time this function was called
-// 				if (!this.keyPressed)
-// 					// Allow the next call to do stuff
-// 					this.keyPressed = true;
-// 					// If event fires twice:
-// 					// Possibly in future keep track of where
-// 					// the key is just now (in a data value?)
-// 					// or see * in conditional below
-
-// 				// If this function called the second time
-// 				else {
-// 					// Get the cursor position. Sources (1)
-// 					var cursorPos = $textRow.prop("selectionStart");
-// 					// If the cursor position is 0
-// 					if (!cursorPos) {
-// 						// Put cursor in prev textarea
-// 						$textRow.prev().focus();
-// 						key.preventDefault();
-// 					}
-// 					// Otherwise (if event fires twice)
-// 						// Put cursor in prev position
-
-// 					// Reset stuff to be done again
-// 					this.keyPressed = false;
-// 				}
-// 			}
-// 		}
-
-// 		// DOWN ARROW
-// 		else if (thisKeyCode == 40) {
-// 			// If this isn't the last textarea
-// 			if ( $(".text-row").index($textRow) !=
-// 				($(".text-row").length - 1) ) {
-// 				// If this is the 1st time this function was called
-// 				if (!this.keyPressed)
-// 					// Allow the next call to do stuff
-// 					this.keyPressed = true;
-// 					// If event fires twice:
-// 					// Possibly in future keep track of where
-// 					// the key is just now (in a data value?)
-// 					// or see * in conditional below
-
-// 				// If this function called the second time
-// 				else {
-// 					// Get the length of the text in the textarea
-// 					var textLength = $textRow.val().length;
-// 					// Get the cursor position. Sources (1)
-// 					// Selection end in case something's selected
-// 					var cursorPos = $textRow.prop("selectionEnd");
-
-// 					// If the cursor is at the end of the text area
-// 					if (cursorPos == textLength) {
-// 						// Move the cursor to the next input field
-// 						$textRow.next().focus();
-// 						// For when textarea has/had multiple lines
-// 						key.preventDefault();
-// 					}
-// 					// Otherwise (if event fires twice)
-// 						// Put cursor in prev position
-
-// 					// Reset stuff to be done again
-// 					this.keyPressed = false;
-// 				}
-// 			}
-// 		}
+		// Down arrow
+			// Turn it into paragraphs instead of wrapped lines
+			// Remember '\n' counts as a character
+			// var newLines = Count the number of new line characters
+			// Get start and end indexes of the last line line
+			// Subtract those from both numbers
+				// If cursor is within this range, focus on next row
+				// Prevent default
 
 		// BEFORE DOUBLED EVENT WITH jwerty.js
 		// // UP ARROW

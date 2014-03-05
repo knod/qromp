@@ -80,32 +80,13 @@ $(document).ready(function() {
 	// Create the first editor row
 	textEditor.firstRow();
 
-	// Makes up and down arrow navigation work
-	jwerty.key("up", function (key) {
-		// Gives it enough of a delay that it actually does
-		// have time to collect the new cursor position
-		setTimeout(function () {
-			textEditor.keyFilter(key, key.keyCode, $(document.activeElement));
-		}, 0);
-	});
-	jwerty.key("down", function (key) {
-		// Gives it enough of a delay that it actually does
-		// have time to collect the new cursor position
-		setTimeout(function () {
-			textEditor.keyFilter(key, key.keyCode, $(document.activeElement));
-		}, 0);
-	});
-
 	$("#text-areas")
 	// *Has* to be .on, *has* to be delegation
 	// Make a tutorial about that somewhere
 	// Depending on what key is pressed in a .text-row field
-	// Do 1st round .text-row keydown stuff (for line navigation)
 	.on("keydown", ".text-row", function (key) {
-		// console.log($(this).prop("selectionStart"))
 		textEditor.keyFilter(key, key.keyCode, $(this));
 	})
-
 	// Helps a bit withresizing after deleting section or
 	// pasting, esp with clicking out of the area after
 	.on("keyup", ".text-row", function (key) {textEditor.resizeRow($(this));})
