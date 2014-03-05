@@ -105,19 +105,6 @@ $(document).ready(function() {
 		// console.log($(this).prop("selectionStart"))
 		textEditor.keyFilter(key, key.keyCode, $(this));
 	})
-	// .prop("selectionStart")
-	// $("#text-areas").on("keydown", ".text-row", function (key) {
-
-	// 	// textEditor.keyFilter(key, key.keyCode, $(this));
-
-	// })
-	// Do 2nd round .text-row keydown stuff (for line navigation)
-	// This doesn't trigger the keydown event twice
-// Does the default event happen now or after now?
-	// .on("keydown", ".text-row", function (key) {textEditor.keyFilter(key, $(this));})
-// Does the default event happen now
-
-// If it happened the second time, will having a new $("#text-areas") work?
 
 	// Helps a bit withresizing after deleting section or
 	// pasting, esp with clicking out of the area after
