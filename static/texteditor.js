@@ -9,6 +9,8 @@
 * 3. http://stackoverflow.com/questions/1707527/cut-out-part-of-a-string (ignore w3schools)
 * 4. http://stackoverflow.com/questions/3597611/javascript-how-to-remove-characters-from-end-of-string
 * 5. http://www.bennadel.com/blog/2159-Using-Slice-Substring-And-Substr-In-Javascript.htm
+* 6. http://jsfiddle.net/n6CC8/
+* 7. http://keithcirkel.co.uk/jwerty/
 * 
 * ToDo:
 * - Figure out why .num-row height doesn't change when
@@ -44,8 +46,7 @@ var textEditor = {
 	/* Enclosure for text editor functions */
 
 	// The colors for an activated row
-	activeNumRow: "#dcdcdc",
-	activeTextRow: "#f0f0f0",
+	activeNumRow: "#dcdcdc", activeTextRow: "#f0f0f0",
 
 	firstRow: function () {
 		/* (None) -> None
@@ -61,6 +62,9 @@ var textEditor = {
 		var $newTextRow = $("<textarea class='text-row'></textarea>")
 		// Store the .num-row as the .text-row's data value
 		.data("numRow", $newNumRow);
+
+		// Print numer of columns and number of rows
+		$newTextRow.col
 
 		// Append them as the first in their divs
 		$("#text-areas").append($newTextRow);
@@ -78,7 +82,11 @@ var textEditor = {
 		textEditor.updateNums();
 	},
 
-	keyFilter: function (key, $textRow) {
+	// More readable than defining this elsewhere
+	// For the double .on("keydown") events
+	keyPressed: false,
+
+	keyFilter: function (key, thisKeyCode, $textRow) {
 		/* (int, jQuery collection) -> None
 
 		Resizes current .num-row on any keypress, calls
@@ -92,88 +100,186 @@ var textEditor = {
 		textEditor.resizeRow($textRow);
 
 		// ENTER
-		if (key.keyCode == 13) {
-			// Add a line, paste the text that was after
-			// the cursor, and update the row numbers
-			textEditor.addRow($textRow);
-			// Don't make a new paragraph
-			// key.stopPropagation(); No problems without this...
-			key.preventDefault();
+		if (thisKeyCode == 13) {
+			// Only want to do this once
+			// if (this.keyPressed) {
+				// Add a line, paste the text that was after
+				// the cursor, and update the row numbers
+				textEditor.addRow($textRow);
+				// Don't make a new paragraph
+				// key.stopPropagation(); No problems without this...
+				key.preventDefault();
+			// }
 		}
 
 		// DELETE
-		else if (key.keyCode == 8) {
+		else if (thisKeyCode == 8) {
+			// Only want to do this once
+			// if (this.keyPressed) {
+				// Get the cursor position. Sources (1)
+				var cursorPos = $textRow.prop("selectionEnd");
 
-			// Get the cursor position. Sources (1)
-			var cursorPos = $textRow.prop("selectionEnd");
+				// Do not remove the first row
+				if ( Math.max(0, $(".text-row").index($textRow)) ) {
+					// If there's no text in the row
+					if (!$textRow.val() || !cursorPos) {
+						// Removes a line, moves the text there to
+						// the prev line, cursor to right place,
+						// and updates the row numbers
+						textEditor.removeRow($textRow);
+						// Now won't delete first letter of prev line
+						key.preventDefault();
+					}
+				}
+			// }
+		}
 
-			// Do not remove the first row
+//http://stackoverflow.com/questions/1760629/how-to-get-number-of-rows-in-textarea
+// Ha!!! Move the cursor, see if new cursor pos is at the start
+// or the end, if not, leave it as is, if so, move to appropriate line
+
+// Two possibleways to go about this that I can see right
+// now - wordwrap and triggering an key event
+	// Wordwrap would detect scrollheight change and make
+	// new divs or take them away depending on the change
+	// This would, I think, involve ghost divs.
+
+	// Triggering the key event we've already worked out,
+	// maybe try that first with http://keithcirkel.co.uk/jwerty/
+
+// http://keithcirkel.co.uk/jwerty/
+		// UP ARROW
+		// if up arrow
+		else if (thisKeyCode == 38) {
+			// if not the first textarea
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
-				// If there's no text in the row
-				if (!$textRow.val() || !cursorPos) {
-					// Removes a line, moves the text there to
-					// the prev line, cursor to right place,
-					// and updates the row numbers
-					textEditor.removeRow($textRow);
-					// Now won't delete first letter of prev line
-					key.preventDefault();
+				// If this is the 1st time this function was called
+				if (!this.keyPressed)
+					// Allow the next call to do stuff
+					this.keyPressed = true;
+					// If event fires twice:
+					// Possibly in future keep track of where
+					// the key is just now (in a data value?)
+					// or see * in conditional below
+
+				// If this function called the second time
+				else {
+					// Get the cursor position. Sources (1)
+					var cursorPos = $textRow.prop("selectionStart");
+					// If the cursor position is 0
+					if (!cursorPos) {
+						// Put cursor in prev textarea
+						$textRow.prev().focus();
+						key.preventDefault();
+					}
+					// Otherwise (if event fires twice)
+						// Put cursor in prev position
+
+					// Reset stuff to be done again
+					this.keyPressed = false;
 				}
 			}
 		}
 
-		// UP ARROW
-		else if (key.keyCode == 38) {
-			// If this isn't the first row
-			if ( Math.max(0, $(".text-row").index($textRow)) ) {
-
-				// // Get the cursor position. Sources (1)
-				// var cursorPos = $textRow.prop("selectionStart");
-
-				// // If the cursor is at the start of the textarea
-				// if (!cursorPos) {
-
-					// // Get the previous .text-row element
-					// // for some reason this doesn't work
-					// // Comes out as undefined
-					// var $prevTextRow = $textRow.prev();
-
-					// // Get the length of the prev textarea
-					// var textLength = $textRow.prev().val().length;
-					// Move the cursor to the prev input field
-					$textRow.prev().focus()
-
-					// For when textarea has/had multiple lines
-					// key.stopPropagation(); No problems without this...
-					// Won't auto travel to start of new area
-					key.preventDefault();
-				// }
-			}
-		}
-
 		// DOWN ARROW
-		else if (key.keyCode == 40) {
+		else if (thisKeyCode == 40) {
 			// If this isn't the last textarea
 			if ( $(".text-row").index($textRow) !=
 				($(".text-row").length - 1) ) {
+				// If this is the 1st time this function was called
+				if (!this.keyPressed)
+					// Allow the next call to do stuff
+					this.keyPressed = true;
+					// If event fires twice:
+					// Possibly in future keep track of where
+					// the key is just now (in a data value?)
+					// or see * in conditional below
 
-				// // Get the length of the text in the textarea
-				// var textLength = $textRow.val().length;
-				// // Get the cursor position. Sources (1)
-				// // Selection end in case they had something selected
-				// var cursorPos = $textRow.prop("selectionEnd");
+				// If this function called the second time
+				else {
+					// Get the length of the text in the textarea
+					var textLength = $textRow.val().length;
+					// Get the cursor position. Sources (1)
+					// Selection end in case something's selected
+					var cursorPos = $textRow.prop("selectionEnd");
 
-				// // If the cursor is at the end of the text area
-				// if (cursorPos == textLength) {
-					// Move the cursor to the next input field
-					$textRow.next().focus()
+					// If the cursor is at the end of the text area
+					if (cursorPos == textLength) {
+						// Move the cursor to the next input field
+						$textRow.next().focus();
+						// For when textarea has/had multiple lines
+						key.preventDefault();
+					}
+					// Otherwise (if event fires twice)
+						// Put cursor in prev position
 
-					// For when textarea has/had multiple lines
-					// key.stopPropagation(); No problems without this...
-					// Won't auto travel to end of new area
-					key.preventDefault();
-				// }
+					// Reset stuff to be done again
+					this.keyPressed = false;
+				}
+
+
+				
 			}
 		}
+
+		// BEFORE DOUBLED EVENT WITH jwerty.js
+		// // UP ARROW
+		// else if (thisKeyCode == 38) {
+		// 	// If this isn't the first row
+		// 	if ( Math.max(0, $(".text-row").index($textRow)) ) {
+
+		// 		// // Get the cursor position. Sources (1)
+		// 		// var cursorPos = $textRow.prop("selectionStart");
+
+		// 		// // If the cursor is at the start of the textarea
+		// 		// if (!cursorPos) {
+
+		// 			// // Get the previous .text-row element
+		// 			// // for some reason this doesn't work
+		// 			// // Comes out as undefined
+		// 			// var $prevTextRow = $textRow.prev();
+
+		// 			// // Get the length of the prev textarea
+		// 			// var textLength = $textRow.prev().val().length;
+		// 			// Move the cursor to the prev input field
+		// 			$textRow.prev().focus();
+
+		// 			// For when textarea has/had multiple lines
+		// 			// key.stopPropagation(); No problems without this...
+		// 			// Won't auto travel to start of new area
+		// 			key.preventDefault();
+		// 		// }
+		// 	}
+		// }
+
+		// // DOWN ARROW
+		// else if (thisKeyCode == 40) {
+		// 	// If this isn't the last textarea
+		// 	if ( $(".text-row").index($textRow) !=
+		// 		($(".text-row").length - 1) ) {
+
+		// 		// // Get the length of the text in the textarea
+		// 		// var textLength = $textRow.val().length;
+		// 		// // Get the cursor position. Sources (1)
+		// 		// // Selection end in case they had something selected
+		// 		// var cursorPos = $textRow.prop("selectionEnd");
+
+		// 		// // If the cursor is at the end of the text area
+		// 		// if (cursorPos == textLength) {
+		// 			// Move the cursor to the next input field
+		// 			$textRow.next().focus();
+
+		// 			// For when textarea has/had multiple lines
+		// 			// key.stopPropagation(); No problems without this...
+		// 			// Won't auto travel to end of new area
+		// 			key.preventDefault();
+		// 		// }
+		// 	}
+		// }
+	},
+
+	secondFilter: function () {
+
 	},
 
 	addRow: function ($textArea) {

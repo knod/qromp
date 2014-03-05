@@ -60,6 +60,7 @@ var editor = {
 // I can do it another way with an initializing
 // function or something if they're not used in
 // other scripts
+
 $(document).ready(function() {
 
 	// ORIGINAL, ACE, ETC:
@@ -79,11 +80,45 @@ $(document).ready(function() {
 	// Create the first editor row
 	textEditor.firstRow();
 
+	// Makes up and down arrow navigation work
+	jwerty.key("up", function (key) {
+		// Gives it enough of a delay that it actually does
+		// have time to collect the new cursor position
+		setTimeout(function () {
+			textEditor.keyFilter(key, key.keyCode, $(document.activeElement));
+		}, 0);
+	});
+	jwerty.key("down", function (key) {
+		// Gives it enough of a delay that it actually does
+		// have time to collect the new cursor position
+		setTimeout(function () {
+			textEditor.keyFilter(key, key.keyCode, $(document.activeElement));
+		}, 0);
+	});
+
 	$("#text-areas")
 	// *Has* to be .on, *has* to be delegation
 	// Make a tutorial about that somewhere
 	// Depending on what key is pressed in a .text-row field
-	.on("keydown", ".text-row", function (key) {textEditor.keyFilter(key, $(this));})
+	// Do 1st round .text-row keydown stuff (for line navigation)
+	.on("keydown", ".text-row", function (key) {
+		// console.log($(this).prop("selectionStart"))
+		textEditor.keyFilter(key, key.keyCode, $(this));
+	})
+	// .prop("selectionStart")
+	// $("#text-areas").on("keydown", ".text-row", function (key) {
+
+	// 	// textEditor.keyFilter(key, key.keyCode, $(this));
+
+	// })
+	// Do 2nd round .text-row keydown stuff (for line navigation)
+	// This doesn't trigger the keydown event twice
+// Does the default event happen now or after now?
+	// .on("keydown", ".text-row", function (key) {textEditor.keyFilter(key, $(this));})
+// Does the default event happen now
+
+// If it happened the second time, will having a new $("#text-areas") work?
+
 	// Helps a bit withresizing after deleting section or
 	// pasting, esp with clicking out of the area after
 	.on("keyup", ".text-row", function (key) {textEditor.resizeRow($(this));})
