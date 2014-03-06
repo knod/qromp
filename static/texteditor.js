@@ -187,7 +187,7 @@ var textEditor = {
 	},
 
 	addRow: function ($textRow) {
-		/* (element) -> None
+		/* (element) -> None 
 
 		Adds divs below current input, one for the
 		rows, one for the text, then numbers the
