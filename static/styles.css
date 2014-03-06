@@ -110,7 +110,7 @@ a:hover {
 
 #scrollable-area {
 	/* Puts #reference in the right place */
-	/* See #qubitElements notes */
+	/* Sources (3) */
 	position: relative;
 	/* em means on cmd+ eval button still has room, I think */
 	/* Nope, percent worked just as well */

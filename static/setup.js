@@ -27,6 +27,7 @@
 * wont' result in an error
 * 
 * DONE:
+* - [DONE] Resize textarea's on window reszie
 * - [NOPE] qubitAttr - misspelled?
 * - [DONE] Decouple ace
 * 
@@ -80,7 +81,6 @@ $(document).ready(function() {
 	// Create the first editor row
 	textEditor.firstRow();
 
-// Textarea resize needed on window resize too?
 	$("#text-areas")
 	// *Has* to be .on, *has* to be delegation
 	// Make a tutorial about that somewhere
@@ -97,4 +97,6 @@ $(document).ready(function() {
 	// into keeping last active row colored when none are active
 	.on("blur", ".text-row", function () {textEditor.deactivateRow($(this));})
 	;
+
+	$(window).on("resize", function (key) {textEditor.resizeRow($(".text-row"));});
 });

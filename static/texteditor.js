@@ -186,7 +186,7 @@ var textEditor = {
 				// Remember '\n' counts as a character
 				// Count the number of new line characters
 				var ghostVal = $("#ghost-area").val();
-				// Sources
+				// Sources (8)
 				var numNewLines = (ghostVal.match(/\n/g)||[]).length;
 				// Get start index of last line of actual textarea
 				// (by subtracting the number of new line chars)
