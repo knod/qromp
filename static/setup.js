@@ -80,6 +80,7 @@ $(document).ready(function() {
 	// Create the first editor row
 	textEditor.firstRow();
 
+// Textarea resize needed on window resize too?
 	$("#text-areas")
 	// *Has* to be .on, *has* to be delegation
 	// Make a tutorial about that somewhere

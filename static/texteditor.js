@@ -77,6 +77,7 @@ var textEditor = {
 		$newTextRow.focus();
 		// Somehow the focus() is not triggering activateRow()
 		// Colors the row the active row colors
+		// !! This is why the data value of .num-row!!
 		textEditor.activateRow($newTextRow);
 		// Numbers the row
 		textEditor.updateNums();
@@ -142,7 +143,9 @@ var textEditor = {
 // For mine, I will want this to be a fake box, so do the newArea thing,
 // but don't make the current textarea into a new area
 // So:
-		// When up arrow is pressed
+		// UP ARROW
+		else if (thisKeyCode == 38) {
+			textEditor.breakWrap($textRow);
 			// Get the cursor position
 
 			// Make a fake textbox
@@ -151,8 +154,9 @@ var textEditor = {
 			// paragraph problem shouldn't be a problem here)
 				// If cursor is within this range, focus on prev row
 				// Prevent default
+		}
 
-		// Down arrow
+		// DOWN ARROW
 			// Turn it into paragraphs instead of wrapped lines
 			// Remember '\n' counts as a character
 			// var newLines = Count the number of new line characters
@@ -408,4 +412,78 @@ var textEditor = {
 		// and return that string
 		return(editorStr);
 	},
+
+	breakWrap: function ($textArea) {
+		/* ($ object) -> None
+
+		Creates a ghost copy of $textArea, puts the
+		"\n" character at the end of each line wrap.
+		*/
+
+// Where I got this from:
+// http://jsfiddle.net/r7JBe/2/
+// My version with notes (not adapted for this function):
+// http://jsfiddle.net/r7JBe/42/
+
+		// Copy $textArea's text
+		var textVal = $textArea.val();
+		// Create ghost copy of $textArea. .clone() doesn't
+		// copy textarea text which is just what we want
+// MAKE $newArea A PERSISTENT ELEMENT? LESS CREATION AND DESTRUCTION
+		var $newArea = $textArea.clone(true);
+
+		// Turn wrapping off so that things go out of site
+		$newArea.css("white-space", "nowrap");
+		// Make it real so that it will have dimensions
+		$("#text-areas").append($newArea);
+
+		var emptyWidth = $textArea.prop("scrollWidth");
+		var lastWrappingIndex = -1;
+
+		// As we add each letter back in one at a time
+		for (var ii = 0; ii < textVal.length; ii++) {
+			// Get the current value on $newArea to add onto
+			var newTextVal = $newArea.val();
+			// Get the current character
+			var curChar = textVal.charAt(ii);
+			// A space, +, or - is where things get wrapped
+			if (curChar == ' ' || curChar == '-' || curChar == '+')
+				// Mark the index of that char
+				{lastWrappingIndex = ii;}
+			// (adding one letter back in) has to change the
+			// actual value so it can tell the width has changed
+			$newArea.val($newArea.val()+ curChar);
+
+			// If unwrapped scrollWidth increases with that addition
+			if ($newArea.prop("scrollWidth") > emptyWidth) {
+				// A string to add to
+				var buffer = "";
+				// if there was ever a place to start wrapping -
+				// a new word or a mathematically opperation
+				if (lastWrappingIndex >= 0) {
+					// Go back to the last index a character was
+					// wrappable + 1, so that it's after the ' ', etc.
+					// and grandfather in anything that was past that
+                	// char up till just before the width increase char
+					for (var jj = lastWrappingIndex + 1; jj < ii; jj++)
+						// it was lastWrappingIndex + 1, but that was
+						// making weird things happen for me, but now
+						// not? I dunno.
+						{buffer += textVal.charAt(jj);}
+					// Start the wrapping marker over again
+					// For the next time through the whole loop
+					lastWrappingIndex = -1;
+				}
+	            // bringing it all back to the current index
+				buffer += curChar;
+	            // Put everything except the excess characters
+	            // into the text area that we made blank
+	            $newArea.val($newArea.val().substr(0, $newArea.val().length - buffer.length));
+	            $newArea.val($newArea.val() + "\n" + buffer);
+	        }
+			// Do it all over again to affect any remaining wraps
+		}
+// *** Works up to here
+	},
+
 }
