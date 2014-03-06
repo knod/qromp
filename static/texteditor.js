@@ -43,6 +43,10 @@
 * 
 */
 
+// Dood. Keep wrapping, when the *scrollHeight* changes
+// can we detect what characters moved? If not, that's
+// fine, we can do the same thing as before
+
 var textEditor = {
 	/* Enclosure for text editor functions */
 
@@ -435,8 +439,9 @@ var textEditor = {
 			var newTextVal = $ghostArea.val();
 			// Get the current character
 			var curChar = textVal.charAt(ii);
-			// A space, +, or - is where things get wrapped
-			if (curChar == ' ' || curChar == '-' || curChar == '+')
+			// What characters cause word wrapping?
+			// A space or - is where things get wrapped
+			if (curChar == ' ' || curChar == '-')
 				// Mark the index of that char
 				{lastWrappingIndex = ii;}
 			// (adding one letter back in) has to change the
