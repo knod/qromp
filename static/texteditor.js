@@ -145,15 +145,39 @@ var textEditor = {
 // So:
 		// UP ARROW
 		else if (thisKeyCode == 38) {
-			textEditor.breakWrap($textRow);
-			// Get the cursor position
+			// Soooo, when the text wraps, the end of the line
+			// and the beginning of the next line have the same
+			// cursor position value. Not sure what to do about
+			// that... because when you press up and land at the
+			// end of a row, you're at that position. If include
+			// that cursor position to move focus, you'll move
+			// focus when you're at the beginning of lines, if
+			// I don't, you won't move focus when you're at the
+			// end of some lines...
 
-			// Make a fake textbox
-			// Turn it into paragraphs instead of wrapped lines
-			// Get start and end indexes of the first line (the
-			// paragraph problem shouldn't be a problem here)
-				// If cursor is within this range, focus on prev row
-				// Prevent default
+			// If we're not in the top row
+			if ( Math.max(0, $(".text-row").index($textRow)) ) {
+				// Get the cursor position
+				var cursorPos = $textRow.prop("selectionStart");
+				// Make a fake textbox
+				// Turn it into paragraphs instead of wrapped lines
+				textEditor.breakWrap($textRow);
+
+				// Get start and end indexes of the first line (the
+				// paragraph problem shouldn't be a problem here)
+				var ghostVal = $("#ghost-area").val();
+				// Subtract 1 for the \n char
+				var topLine = ghostVal.substr(0, ghostVal.indexOf('\n') - 1);
+				var lineLength = topLine.length;
+
+				// If cursor is within this range
+				if (cursorPos <= lineLength) {
+					// focus on prev row
+					$textRow.prev().focus();
+					// Don't move up again
+					key.preventDefault();
+				}
+			}
 		}
 
 		// DOWN ARROW
