@@ -139,7 +139,8 @@ var textEditor = {
 // Dood
 // http://jsfiddle.net/r7JBe/2/
 // Way to count the number of characters actually in a line in text area
-// Comentated and adjusted: http://jsfiddle.net/r7JBe/39/
+// My version with notes (not adapted for this function):
+// http://jsfiddle.net/r7JBe/39/
 // For mine, I will want this to be a fake box, so do the newArea thing,
 // but don't make the current textarea into a new area
 // So:
@@ -159,12 +160,12 @@ var textEditor = {
 			if ( Math.max(0, $(".text-row").index($textRow)) ) {
 				// Get the cursor position
 				var cursorPos = $textRow.prop("selectionStart");
-				// Make a fake textbox
-				// Turn it into paragraphs instead of wrapped lines
+				// Make a fake textbox make same text as
+				// paragraphs instead of wrapped lines
 				textEditor.breakWrap($textRow);
 
 				// Get start and end indexes of the first line (the
-				// paragraph problem shouldn't be a problem here)
+				// "\n" problem shouldn't be a problem here)
 				var ghostVal = $("#ghost-area").val();
 				// Subtract 1 for the \n char
 				var topLine = ghostVal.substr(0, ghostVal.indexOf('\n') - 1);
@@ -172,7 +173,7 @@ var textEditor = {
 
 				// If cursor is within this range
 				if (cursorPos <= lineLength) {
-					// focus on prev row
+					// Move cursor to previous textarea
 					$textRow.prev().focus();
 					// Don't move up again
 					key.preventDefault();
@@ -181,13 +182,34 @@ var textEditor = {
 		}
 
 		// DOWN ARROW
-			// Turn it into paragraphs instead of wrapped lines
-			// Remember '\n' counts as a character
-			// var newLines = Count the number of new line characters
-			// Get start and end indexes of the last line line
-			// Subtract those from both numbers
-				// If cursor is within this range, focus on next row
-				// Prevent default
+		else if (thisKeyCode == 40) {
+			// If this isn't the last textarea
+			if ( $(".text-row").index($textRow) !=
+				($(".text-row").length - 1) ) {
+				// Get the cursor position
+				var cursorPos = $textRow.prop("selectionStart");
+				// Make a fake textbox make same text as
+				// paragraphs instead of wrapped lines
+				textEditor.breakWrap($textRow);
+				// Remember '\n' counts as a character
+				// Count the number of new line characters
+				var ghostVal = $("#ghost-area").val();
+//http://stackoverflow.com/questions/881085/count-the-number-of-occurences-of-a-character-in-a-string-in-javascript
+// Lo Sauer
+				var numNewLines = (ghostVal.match(/\n/g)||[]).length;
+				// Get start index of last line of actual textarea
+				// (by subtracting the number of new line chars)
+				var startIndex = ghostVal.lastIndexOf("\n") - numNewLines;
+
+				// If cursor is within this range
+				if (cursorPos >= startIndex) {
+					// Move cursor to next textarea
+					$textRow.next().focus();
+					// Don't move down again
+					key.preventDefault();
+				}
+			}
+		}
 
 		// BEFORE DOUBLED EVENT WITH jwerty.js
 		// // UP ARROW
@@ -453,6 +475,10 @@ var textEditor = {
 		Sometimes, one letter won't wrap in the actual area,
 		but will wrap in the ghost area. The real area will
 		be scrolling a bit. Why?
+		Sometimes lastWrappingIndex + 1 will cause an error
+		(see "plus1" screenshots), sometimes lastWrappingIndex
+		will cause an error. emptyWidth + 6 seemed to help
+		for "plus1" screenshots, we'll see how it goes.
 		*/
 
 		// Wrapping is off so words past starting
@@ -482,7 +508,7 @@ var textEditor = {
 			$ghostArea.val($ghostArea.val()+ curChar);
 
 			// If unwrapped scrollWidth increases with that addition
-			if ($ghostArea.prop("scrollWidth") > emptyWidth) {
+			if ($ghostArea.prop("scrollWidth") > (emptyWidth + 6)) {
 				// A string to add to
 				var buffer = "";
 				// if there was ever a place to start wrapping -
