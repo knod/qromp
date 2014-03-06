@@ -109,13 +109,13 @@ a:hover {
 }
 
 #scrollable-area {
+	/* Puts #reference in the right place */
+	/* See #qubitElements notes */
+	position: relative;
 	/* em means on cmd+ eval button still has room, I think */
 	/* Nope, percent worked just as well */
 	height: 43.6em; /* Space left for evaluate at bottom */
 	overflow: auto;
-	/* Puts #reference in the right place */
-	/* See #qubitElements notes */
-	position: relative;
 }
 
 #textInput {
@@ -146,6 +146,8 @@ a:hover {
 }
 
 #text-areas {
+	/* Positions #ghost-area correctly */
+	position: relative;
 	overflow: hidden;
 }
 
@@ -154,16 +156,13 @@ a:hover {
 	padding: 1px 4px 1px 0;
 }
 
-/* Maybe a div to add padding, once we figure that out */
-.ta-div {
-	padding: 1px 6px;
-}
-
 /* .text-row's are textareas */
 /* Wordwrap breaking isn't working with padding */
-.text-row {
+.text-row, #ghost-area {
 	outline: none;
 	display: block;
+	/* for #ghost-area for some reason */
+	margin: 0;
 	padding: 1px 0px;
 	width: 100%;
 	font-size: 15px;
@@ -174,6 +173,16 @@ a:hover {
 	-webkit-box-sizing: border-box; /* Safari/Chrome, other WebKit */
 	-moz-box-sizing: border-box;    /* Firefox, other Gecko */
 	box-sizing: border-box;         /* Opera/IE 8+ */
+}
+
+/* Don't know why it's invisible */
+#ghost-area {
+	white-space: nowrap;
+	/*position: absolute;
+	left: 0;
+	top: 0;*/
+	/*z-index: -1;*/
+	background: lightblue;
 }
 
 #reference {

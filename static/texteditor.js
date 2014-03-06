@@ -413,37 +413,40 @@ var textEditor = {
 		return(editorStr);
 	},
 
+	// To help textarea navigation
+	$ghostArea: $("#text-areas").append($("<textarea id='ghost-area'></textarea>")),
+
 	breakWrap: function ($textArea) {
 		/* ($ object) -> None
 
 		Creates a ghost copy of $textArea, puts the
 		"\n" character at the end of each line wrap.
+		Where I got this from:
+		http://jsfiddle.net/r7JBe/2/
+		My version with notes (not adapted for this function):
+		http://jsfiddle.net/r7JBe/42/
+
+		Sometimes, one letter won't wrap in the actual area,
+		but will wrap in the ghost area. The real area will
+		be scrolling a bit. Why?
 		*/
 
-// Where I got this from:
-// http://jsfiddle.net/r7JBe/2/
-// My version with notes (not adapted for this function):
-// http://jsfiddle.net/r7JBe/42/
-
+		// Wrapping is off so words past starting
+		// width will change its scrollingWidth
+		$ghostArea = $("#ghost-area");
 		// Copy $textArea's text
 		var textVal = $textArea.val();
-		// Create ghost copy of $textArea. .clone() doesn't
-		// copy textarea text which is just what we want
-// MAKE $newArea A PERSISTENT ELEMENT? LESS CREATION AND DESTRUCTION
-		var $newArea = $textArea.clone(true);
-
-		// Turn wrapping off so that things go out of site
-		$newArea.css("white-space", "nowrap");
-		// Make it real so that it will have dimensions
-		$("#text-areas").append($newArea);
+		// Empty it of any text that was last in here
+		$ghostArea.val("");
+		//asldjflkasjdflkajsdflkjasldf;jasl;dfjsalk;djfads;lfja
 
 		var emptyWidth = $textArea.prop("scrollWidth");
 		var lastWrappingIndex = -1;
 
 		// As we add each letter back in one at a time
 		for (var ii = 0; ii < textVal.length; ii++) {
-			// Get the current value on $newArea to add onto
-			var newTextVal = $newArea.val();
+			// Get the current value on $ghostArea to add onto
+			var newTextVal = $ghostArea.val();
 			// Get the current character
 			var curChar = textVal.charAt(ii);
 			// A space, +, or - is where things get wrapped
@@ -452,10 +455,10 @@ var textEditor = {
 				{lastWrappingIndex = ii;}
 			// (adding one letter back in) has to change the
 			// actual value so it can tell the width has changed
-			$newArea.val($newArea.val()+ curChar);
+			$ghostArea.val($ghostArea.val()+ curChar);
 
 			// If unwrapped scrollWidth increases with that addition
-			if ($newArea.prop("scrollWidth") > emptyWidth) {
+			if ($ghostArea.prop("scrollWidth") > emptyWidth) {
 				// A string to add to
 				var buffer = "";
 				// if there was ever a place to start wrapping -
@@ -478,12 +481,11 @@ var textEditor = {
 				buffer += curChar;
 	            // Put everything except the excess characters
 	            // into the text area that we made blank
-	            $newArea.val($newArea.val().substr(0, $newArea.val().length - buffer.length));
-	            $newArea.val($newArea.val() + "\n" + buffer);
+	            $ghostArea.val($ghostArea.val().substr(0, $ghostArea.val().length - buffer.length));
+	            $ghostArea.val($ghostArea.val() + "\n" + buffer);
 	        }
 			// Do it all over again to affect any remaining wraps
 		}
-// *** Works up to here
 	},
 
 }
