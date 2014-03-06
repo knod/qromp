@@ -11,6 +11,7 @@
 * 5. http://www.bennadel.com/blog/2159-Using-Slice-Substring-And-Substr-In-Javascript.htm
 * 6. http://jsfiddle.net/n6CC8/
 * 7. http://keithcirkel.co.uk/jwerty/
+* 8. http://stackoverflow.com/questions/881085/count-the-number-of-occurences-of-a-character-in-a-string-in-javascript  Lo Sauer
 * 
 * ToDo:
 * - Figure out why .num-row height doesn't change when
@@ -135,15 +136,6 @@ var textEditor = {
 			// }
 		}
 
-
-// Dood
-// http://jsfiddle.net/r7JBe/2/
-// Way to count the number of characters actually in a line in text area
-// My version with notes (not adapted for this function):
-// http://jsfiddle.net/r7JBe/39/
-// For mine, I will want this to be a fake box, so do the newArea thing,
-// but don't make the current textarea into a new area
-// So:
 		// UP ARROW
 		else if (thisKeyCode == 38) {
 			// Soooo, when the text wraps, the end of the line
@@ -194,8 +186,7 @@ var textEditor = {
 				// Remember '\n' counts as a character
 				// Count the number of new line characters
 				var ghostVal = $("#ghost-area").val();
-//http://stackoverflow.com/questions/881085/count-the-number-of-occurences-of-a-character-in-a-string-in-javascript
-// Lo Sauer
+				// Sources
 				var numNewLines = (ghostVal.match(/\n/g)||[]).length;
 				// Get start index of last line of actual textarea
 				// (by subtracting the number of new line chars)
@@ -210,61 +201,6 @@ var textEditor = {
 				}
 			}
 		}
-
-		// BEFORE DOUBLED EVENT WITH jwerty.js
-		// // UP ARROW
-		// else if (thisKeyCode == 38) {
-		// 	// If this isn't the first row
-		// 	if ( Math.max(0, $(".text-row").index($textRow)) ) {
-
-		// 		// // Get the cursor position. Sources (1)
-		// 		// var cursorPos = $textRow.prop("selectionStart");
-
-		// 		// // If the cursor is at the start of the textarea
-		// 		// if (!cursorPos) {
-
-		// 			// // Get the previous .text-row element
-		// 			// // for some reason this doesn't work
-		// 			// // Comes out as undefined
-		// 			// var $prevTextRow = $textRow.prev();
-
-		// 			// // Get the length of the prev textarea
-		// 			// var textLength = $textRow.prev().val().length;
-		// 			// Move the cursor to the prev input field
-		// 			$textRow.prev().focus();
-
-		// 			// For when textarea has/had multiple lines
-		// 			// key.stopPropagation(); No problems without this...
-		// 			// Won't auto travel to start of new area
-		// 			key.preventDefault();
-		// 		// }
-		// 	}
-		// }
-
-		// // DOWN ARROW
-		// else if (thisKeyCode == 40) {
-		// 	// If this isn't the last textarea
-		// 	if ( $(".text-row").index($textRow) !=
-		// 		($(".text-row").length - 1) ) {
-
-		// 		// // Get the length of the text in the textarea
-		// 		// var textLength = $textRow.val().length;
-		// 		// // Get the cursor position. Sources (1)
-		// 		// // Selection end in case they had something selected
-		// 		// var cursorPos = $textRow.prop("selectionEnd");
-
-		// 		// // If the cursor is at the end of the text area
-		// 		// if (cursorPos == textLength) {
-		// 			// Move the cursor to the next input field
-		// 			$textRow.next().focus();
-
-		// 			// For when textarea has/had multiple lines
-		// 			// key.stopPropagation(); No problems without this...
-		// 			// Won't auto travel to end of new area
-		// 			key.preventDefault();
-		// 		// }
-		// 	}
-		// }
 	},
 
 	secondFilter: function () {
