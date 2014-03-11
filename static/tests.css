@@ -7,19 +7,26 @@
 * Sources:
 * 
 * ToDo:
-* - Make circles
 * - Make rectangle made of two rectangles
 * - Make third rectangle that is in the center of those,
 * same width, but only as tall as the difference between
 * the other two rectangles
 * 
 * DONE:
+* - [DONE] Make circles
 * 
 */
 
+#container {
+	text-align: center;
+	margin: 0 auto;
+}
+
 .one-qubit {
-	width: 500px;
-	height: 500px;
+	position: relative;
+	display: inline-block;
+	width: 200px;
+	height: 200px;
 	background: lightblue;
 }
 
@@ -30,11 +37,12 @@
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
+}
+
+.black {
     background: black;
 }
 
-#demo7_box {
-	width: 20px;
-	height: 20px;
-	background-color: black;
+.white {
+	background: white;
 }

@@ -87,17 +87,17 @@ $(document).ready(function() {
 
 		// Angle between center and mouse
 		// Get center pos relative to screen
-		var qCenterX = $orbitPath.offset().left + qRadius;
-		var qCenterY = $orbitPath.offset().top + qRadius;
-		var angleToMouse = Math.atan2((mouseX-qCenterX), (mouseY-qCenterY));
+		var qPageCenterX = $orbitPath.offset().left + qRadius;
+		var qPageCenterY = $orbitPath.offset().top + qRadius;
+		var angleToMouse = Math.atan2((mouseX-qPageCenterX), (mouseY-qPageCenterY));
 		// For getting the text value: * (180/Math.PI) +
 		// whatever number will put 0 where you want it
 
 		// Put the dot at a certain radius at that angle
 		// (remember to put the arc at the center of the
 		// object by subtracting its own radius)
-		var newX = qCenterX + radius * Math.sin(angleToMouse) - circRadius;
-		var newY = qCenterY + radius * Math.cos(angleToMouse) - circRadius;
+		var newX = qRadius + radius * Math.sin(angleToMouse) - circRadius;
+		var newY = qRadius + radius * Math.cos(angleToMouse) - circRadius;
 		$toDrag.css({left: newX, top: newY});
 	}
 
