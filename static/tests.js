@@ -10,8 +10,6 @@
 * --- General ---
 * - Make resize function
 * --- Phases ---
-* - [DONE] Make circles draggable
-* - [DONE] Make circles draggable around a centerpoint
 * - Make circles show their degree value in relation
 * to the right side horizon
 * --- Probability ---
@@ -20,6 +18,8 @@
 * 
 * 
 * DONE:
+* - [DONE] Make circles draggable
+* - [DONE] Make circles draggable around a centerpoint
 * - [DONE, it worked by setting the origin not in the element
 * itself] Look into this: http://jsfiddle.net/sandeeprajoria/x5APH/11/
 * from this:
@@ -79,7 +79,7 @@ $(document).ready(function() {
 		runDrag = false;
 	})
 
-	function dragCircle($orbitPath) {
+	function dragCircle($container) {
 		/* (None) -> None
 
 		Drag the circle in its idiom:
@@ -91,8 +91,8 @@ $(document).ready(function() {
 
 		// Angle between center and mouse
 		// Get center pos relative to screen
-		var qPageCenterX = $orbitPath.offset().left + qRadius;
-		var qPageCenterY = $orbitPath.offset().top + qRadius;
+		var qPageCenterX = $container.offset().left + qRadius;
+		var qPageCenterY = $container.offset().top + qRadius;
 		var angleToMouse = Math.atan2((mouseX-qPageCenterX), (mouseY-qPageCenterY));
 		// For getting the text value: * (180/Math.PI) +
 		// whatever number will put 0 where you want it
@@ -103,6 +103,14 @@ $(document).ready(function() {
 		var newX = qRadius + radius * Math.sin(angleToMouse) - circRadius;
 		var newY = qRadius + radius * Math.cos(angleToMouse) - circRadius;
 		$toDrag.css({left: newX, top: newY});
+
+		// Get and display the new value
+		phaseVal = Math.round(180 + (angleToMouse * (180/Math.PI)));
+		// Do it for the right one though
+		if ($toDrag.hasClass("phase-up")) {
+			$container.find(".phase-up-num").text(phaseVal);
+		}
+		else {$container.find(".phase-down-num").text(phaseVal);}
 	}
 
 });

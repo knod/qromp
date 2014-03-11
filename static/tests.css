@@ -39,10 +39,10 @@
     border-radius: 25px;
 }
 
-.black {
-    background: black;
+.phase-up-num {
+	background: white;
 }
 
-.white {
-	background: white;
+.phase-down-num{
+    background: black;
 }
