@@ -49,29 +49,14 @@ $(document).ready(function() {
 		// DIDN'T work when the same was done for .circle
 		// (though it doesn't do as well outside .one-qubit)
 
-		$this = $(this);
+		var $this = $(this);
 
 		// If the mouse is down on an object
 		if (runDrag) {
 			// Get coords of the mouse
 			mouseX = eve.pageX;
 			mouseY = eve.pageY;
-			dragCircle($toDrag);
-
-			// Angle between center and mouse
-			// Get center pos relative to screen
-			var qCenterX = $this.offset().left + qRadius;
-			var qCenterY = $this.offset().top + qRadius;
-			var angleToMouse = Math.atan2((mouseX-qCenterX), (mouseY-qCenterY));
-			// For getting the text value: * (180/Math.PI) +
-			// whatever number will put 0 where you want it
-
-			// Put the dot at a certain radius at that angle
-			// (remember to put the arc at the center of the
-			// object by subtracting its own radius)
-			newX = qCenterX + radius * Math.sin(angleToMouse) - circRadius;
-			newY = qCenterY + radius * Math.cos(angleToMouse) - circRadius;
-			$toDrag.css({left: newX, top: newY});
+			dragCircle($this);
 		}
 	})
 	;
@@ -94,17 +79,26 @@ $(document).ready(function() {
 		runDrag = false;
 	})
 
-	function dragCircle($toDrag) {
+	function dragCircle($orbitPath) {
 		/* (None) -> None
 
-		Drag the circle in its way
+		Drag the circle in its idiom
 		*/
 
-		// Offset of circle to put mouse in the middle
-		var centerX = mouseX - circRadius;
-		var centerY = mouseY - circRadius;
+		// Angle between center and mouse
+		// Get center pos relative to screen
+		var qCenterX = $orbitPath.offset().left + qRadius;
+		var qCenterY = $orbitPath.offset().top + qRadius;
+		var angleToMouse = Math.atan2((mouseX-qCenterX), (mouseY-qCenterY));
+		// For getting the text value: * (180/Math.PI) +
+		// whatever number will put 0 where you want it
 
-		$toDrag.css({ "left": centerX + "px", "top": centerY + "px" })
+		// Put the dot at a certain radius at that angle
+		// (remember to put the arc at the center of the
+		// object by subtracting its own radius)
+		var newX = qCenterX + radius * Math.sin(angleToMouse) - circRadius;
+		var newY = qCenterY + radius * Math.cos(angleToMouse) - circRadius;
+		$toDrag.css({left: newX, top: newY});
 	}
 
 });
