@@ -17,11 +17,24 @@
 * 
 */
 
+.one-qubit {
+	width: 500px;
+	height: 500px;
+	background: lightblue;
+}
+
 .circle {
-    width: 50px;
-    height: 50px;
+	position: absolute;
+    width: 20px;
+    height: 20px;
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
     background: black;
+}
+
+#demo7_box {
+	width: 20px;
+	height: 20px;
+	background-color: black;
 }
