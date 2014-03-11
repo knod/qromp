@@ -1,0 +1,27 @@
+/* test.css
+* Created by: knod
+* Date created: 03/11/14
+* Page for testing things randomly
+* 	Right now trying to test dragable geometry stuff
+* 
+* Sources:
+* 
+* ToDo:
+* - Make circles
+* - Make rectangle made of two rectangles
+* - Make third rectangle that is in the center of those,
+* same width, but only as tall as the difference between
+* the other two rectangles
+* 
+* DONE:
+* 
+*/
+
+.circle {
+    width: 50px;
+    height: 50px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+    background: black;
+}
