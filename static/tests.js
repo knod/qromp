@@ -82,7 +82,11 @@ $(document).ready(function() {
 	function dragCircle($orbitPath) {
 		/* (None) -> None
 
-		Drag the circle in its idiom
+		Drag the circle in its idiom:
+		-- s-man --
+		Find the angle between the center and your mouse.
+		Make that the angle between the center and the
+		object and then use the distance to place it
 		*/
 
 		// Angle between center and mouse
@@ -107,11 +111,6 @@ $(document).ready(function() {
 /* Pseudo/Notes
 -- When the circles are overlapped, which one is on top? --
 Whichever one has the correspondingly higher probability
-
--- strass --
-Find the angle between the center and your mouse. Make that the
-angle between the center and the object and then use the distance
-to place it
 
 
 */
