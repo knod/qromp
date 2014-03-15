@@ -28,6 +28,7 @@
 	width: 200px;
 	height: 200px;
 	background-color: lightblue;
+	cursor: default;
 }
 
 .circle {
@@ -37,6 +38,13 @@
     -webkit-border-radius: 25px;
     -moz-border-radius: 25px;
     border-radius: 25px;
+	-webkit-user-select: none; /* Chrome/Safari */        
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+ */
+	/* Rules below not implemented in browsers yet
+	(noted in '11) */
+	-o-user-select: none;
+	user-select: none;
 }
 
 .phase-up {
@@ -59,6 +67,13 @@
 	height: 40%;
 	overflow: hidden;
 	border: 1px solid gray;
+	-webkit-user-select: none; /* Chrome/Safari */        
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+ */
+	/* Rules below not implemented in browsers yet
+	(noted in '11) */
+	-o-user-select: none;
+	user-select: none;
 }
 
 .prob-up {

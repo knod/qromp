@@ -132,14 +132,15 @@ $(document).ready(function() {
 		Max of 100, min of 0
 		*/
 
-
-
-		console.log($probDiv.attr("class"));
 		// http://stackoverflow.com/questions/14651306/get-mouse-position-within-div
 		// New meeting point for the prob divs
-		newMidpoint = mouseY - $probDiv.offset().top;
+		var newMidpoint = mouseY - $probDiv.offset().top;
+		// Limit it to max 100, min 0
+		newMidpoint = Math.min($probDiv.innerHeight(), Math.max(0, newMidpoint));
 		// Change the heights of the probability divs
-		$probDiv.find(".prob-up");
+		$probDiv.find(".prob-up").css({height: newMidpoint + "px"});
+		var downHeight = $probDiv.innerHeight() - newMidpoint;
+		$probDiv.find(".prob-down").css({height: downHeight + "px"});
 	}
 
 });
