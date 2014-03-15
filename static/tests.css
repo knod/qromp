@@ -27,7 +27,7 @@
 	display: inline-block;
 	width: 200px;
 	height: 200px;
-	background: lightblue;
+	background-color: lightblue;
 }
 
 .circle {
@@ -39,10 +39,38 @@
     border-radius: 25px;
 }
 
-.phase-up-num {
-	background: white;
+.phase-up {
+	background-color: white;
 }
 
-.phase-down-num{
-    background: black;
+.phase-down {
+    background-color: black;
+}
+
+/* Padding for .prob-div */
+.value {
+	height: 30%;
+}
+
+.prob-div {
+	position: relative;
+	margin: 0 auto;
+	width: 40%;
+	height: 40%;
+	overflow: hidden;
+	border: 1px solid gray;
+}
+
+.prob-down {
+	height: 20%;
+	background-color: white;
+}
+
+.prob-up {
+    height: 80%;
+    background-color: black;
+}
+
+.prob-diff {
+	pointer-events: none;
 }
