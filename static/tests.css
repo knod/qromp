@@ -61,14 +61,14 @@
 	border: 1px solid gray;
 }
 
-.prob-down {
-	height: 20%;
-	background-color: white;
-}
-
 .prob-up {
     height: 80%;
     background-color: black;
+}
+
+.prob-down {
+	height: 20%;
+	background-color: white;
 }
 
 .prob-diff {

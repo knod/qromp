@@ -27,15 +27,12 @@
 * 
 */
 
-var runDrag = false;
+var canDragPhase = false, canDragProb = false;
 
 $(document).ready(function() {
 	// *** SETUP ***\\
-	// Should updating be called right now?
-	 runDrag = false
-	//, 
 	var mouseX = null, mouseY = null
-	, $toDrag = null
+	, $toDrag = null, $probDiv = null
 	, $circle = $(".circle"), circRadius = $circle.outerWidth()/2
 	, $qubit = $(".one-qubit"), qRadius = $qubit.outerWidth()/2
 	, radius = 70
@@ -43,7 +40,7 @@ $(document).ready(function() {
 
 	// When mouse moves on circle (perhaps make this
 	// on any manipulatable element)
-	$(".one-qubit").on("mousemove", function (eve) {
+	$(".one-qubit").on("mousemove", function (evt) {
 		// For some reason, while dragging mousemove works
 		// even out of .one-qubit, but it
 		// DIDN'T work when the same was done for .circle
@@ -52,11 +49,18 @@ $(document).ready(function() {
 		var $this = $(this);
 
 		// If the mouse is down on an object
-		if (runDrag) {
+		if (canDragPhase) {
 			// Get coords of the mouse
-			mouseX = eve.pageX;
-			mouseY = eve.pageY;
+			mouseX = evt.pageX;
+			mouseY = evt.pageY;
 			dragCircle($this);
+		}
+
+		if (canDragProb) {
+			// Get coords of the mouse
+			mouseX = evt.pageX;
+			mouseY = evt.pageY;
+			dragProb($probDiv);
 		}
 	})
 	;
@@ -67,7 +71,13 @@ $(document).ready(function() {
 	.on("mousedown", function () {
 		// Set an item to drag, allow it to be dragged
 		$toDrag = $(this);
-		runDrag = true;
+		canDragPhase = true;
+	});
+	$(".prob-div").on("mousedown", function (evt) {
+		// Drag the prob where they take it
+		var $this = $(this);
+		$probDiv = $(evt.target).parent();
+		canDragProb = true;
 	})
 	;
 
@@ -76,11 +86,12 @@ $(document).ready(function() {
 	// still stop
 	// Stop dragging on mouseup
 	$(document).on("mouseup", function() {
-		runDrag = false;
+		canDragPhase = false;
+		canDragProb = false;
 	})
 
 	function dragCircle($container) {
-		/* (None) -> None
+		/* ($ object) -> None
 
 		Drag the circle in its idiom:
 		-- s-man --
@@ -111,6 +122,24 @@ $(document).ready(function() {
 			$container.find(".phase-up-num").text(phaseVal);
 		}
 		else {$container.find(".phase-down-num").text(phaseVal);}
+	}
+
+	function dragProb($probDiv) {
+		/* ($ object) -> None
+
+		Drag the rectangles in their idiom - their
+		meeting point is wherever the mouse goes.
+		Max of 100, min of 0
+		*/
+
+
+
+		console.log($probDiv.attr("class"));
+		// http://stackoverflow.com/questions/14651306/get-mouse-position-within-div
+		// New meeting point for the prob divs
+		newMidpoint = mouseY - $probDiv.offset().top;
+		// Change the heights of the probability divs
+		$probDiv.find(".prob-up");
 	}
 
 });
