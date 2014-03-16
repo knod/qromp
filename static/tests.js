@@ -78,6 +78,10 @@ $(document).ready(function() {
 		var $this = $(this);
 		$probDiv = $(evt.target).parent();
 		canDragProb = true;
+		// Change midpoint on click as well
+		mouseX = evt.pageX;
+		mouseY = evt.pageY;
+		dragProb($probDiv);
 	})
 	;
 
