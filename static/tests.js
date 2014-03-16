@@ -120,7 +120,7 @@ $(document).ready(function() {
 		$toDrag.css({left: newX, top: newY});
 
 		// Get and display the new value
-		phaseVal = Math.round(180 + (angleToMouse * (180/Math.PI)));
+		phaseVal = Math.round(270 + (angleToMouse * (180/Math.PI))) % 360;
 		// Do it for the right one though
 		if ($toDrag.hasClass("phase-up")) {
 			$container.find(".phase-up-num").text(phaseVal);
