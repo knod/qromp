@@ -53,13 +53,16 @@ $(document).ready(function() {
 
 	// *** EVENT LISTENERS ***\\
 	// Start dragging on mousedown
-	$(".circle").on("mousedown", function () {
+	$("#qubitElements").on("mousedown", ".circle", function (evt) {
+		// console.log(".circle");
 		// Set an item to drag, allow it to be dragged
 		$toDrag = $(this);
 		canDragPhase = true;
+		evt.stopPropagation();
 	});
 
-	$(".qubit").on("mousedown", function (evt) {
+	$("#qubitElements").on("mousedown", ".prob-div", function (evt) {
+		console.log(".prob-div");
 		// Drag the prob where they take it
 		var $this = $(this);
 		$probDiv = $(evt.target).parent();
@@ -67,6 +70,7 @@ $(document).ready(function() {
 		// Change midpoint on click as well
 		mouseX = evt.pageX; mouseY = evt.pageY;
 		dragProb($probDiv);
+		evt.stopPropagation();
 	})
 	;
 
@@ -77,6 +81,11 @@ $(document).ready(function() {
 	$(document).on("mouseup", function() {
 		canDragPhase = false;
 		canDragProb = false;
+	})
+
+	// Testing
+	$(document).on("mousedown", function (evt) {
+		console.log($(evt.target).attr("class"));
 	})
 
 	function dragCircle($container) {
@@ -146,32 +155,34 @@ $(document).ready(function() {
 
 var qubits = [];
 
-qubits.arrange = function(percentMargin, percentSpacing) {
-	var percentMargin = percentMargin || .9,
-		percentSpacing = percentSpacing || .1,
-		n = this.length,
-		limitingDim = Math.min($visualizer.height(), $visualizer.width()),
-		dim = percentMargin * limitingDim;
-	if (n === 1) {
-		var size = dim * (1 - 2 * percentSpacing);
-		this[0].render(size);
-	} else {
-		var size = 225 / Math.pow(n, .6),
-			radius = (dim - size) / 2;
-		this.render(size, radius);
+qubits.render = function() {
+	var n = this.length,
+		theta = 2 * Math.PI / n,
+		T = Math.tan(theta / 2),
+		radius = 0,
+		visSpace = Math.min($visualizer.height(), $visualizer.width()),
+		size = visSpace;
+	if (n > 1) {
+		if (n === 2) {
+			size = visSpace / 2;
+			radius = (visSpace - size) / 2;
+		} else if (n % 2 === 0) {
+			size = visSpace * T / (1 + 2 * T);
+			radius = (visSpace - size) / 2;
+		} else {
+			var phi = theta * (n - 1) / 2,
+				psi = phi / 2 - Math.PI / 4; 
+			size = 2 * visSpace / (Math.SQRT2 * ((1 + 1 / T) * Math.sqrt(1 - Math.cos(phi)) + 2 * Math.cos(psi)));
+			radius = size / 2 + (size / 2) / T;
+			var yOffset = (radius + size * (1 / 2 - 1 / (2 * Math.sin(theta / 2)) - Math.cos(theta / 2))) / 2;
+		}
 	}
-}
-
-qubits.render = function(size, radius, yOffset) {
-	var radius = radius || 0,
-		numQubits = this.length;
-	$("#qubitsElements").css({"margin-top": (yOffset || 0) / rem + "rem"});
-	for (var i = 0, angle = 180; i < numQubits; i++, angle += 360 / numQubits){
-		this[i].render(size).css({
-			"transform": "translate(-50%, -50%) rotate(" +
+	$("#qubitElements").css({"margin-top": (yOffset || 0) / rem + "rem"});
+	for (var i = 0, angle = 180; i < n; i++, angle += 360 / n){
+		this[i].render(.8 * size).css({
+			"-webkit-transform": "translate(-50%, -50%) rotate(" +
 			angle + "deg) translateY(" +
-			radius / rem + "rem) rotate(-" +
-			angle + "deg)"
+			radius / rem + "rem)"
 		});
 	}
 }
@@ -183,7 +194,7 @@ qubits.update = function(qubitStates) {
 		} else {
 			this[i].UP = qubitStates[i].UP;
 			this[i].DOWN = qubitStates[i].DOWN;
-			this.arrange();
+			this.render();
 		}
 	}
 }
@@ -192,7 +203,7 @@ qubits.pop = function() {
 	if (this.length > 1){
 		this[this.length - 1].$div.remove();
 		Array.prototype.pop.call(this);
-		this.arrange();
+		this.render();
 	}
 }
 
@@ -214,13 +225,15 @@ function Qubit(qubitState) {
 		this.label = qubits.length;
 		// One qubit div
 		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'>"
+			+ "<div class='prob-div'>"
+				+ "<div class='up-prob'></div><div class='down-prob'></div>"
+			+ "</div>"
 			// The orbiting circle divs
 			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
-			+ "<div class='up-prob'></div><div class='down-prob'></div>"
 			+ "</div>");
 		$("#qubitElements").append(this.$div);
 		qubits.push(this);
-		qubits.arrange();
+		qubits.render();
 	}
 }
 
@@ -231,7 +244,7 @@ Qubit.prototype.render = function(size) {
 	$thisDiv.css({
 		"width": (size / rem) + "rem",
 		"height": (size / rem) + "rem"
-	}).children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
+	}).children(".prob-div").children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
 
 	// Seth math magic to move circles around
 	// Ex to play with: ((u2 1 0.3 1.6 1 0))
