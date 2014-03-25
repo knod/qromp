@@ -4,6 +4,12 @@
 * Trying to override the visualizer to implement new
 * qubit display
 * 
+* Notes:
+* examples:
+* ((u2 1 0.3 1.6 1 0))
+* ((hadamard 0))
+* ((u-theta 0.6 0))
+* 
 * Sources:
 * 
 * TODO:
@@ -84,12 +90,8 @@ function Qubit(qubitState) {
 		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'>"
 			// The orbiting circle divs
 			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
-			// This will center the probability area
-			+ "<div class='prob-spacer'></div>"
-			// Create the probability area
-			+ "<div class='prob-div'>"
 			+ "<div class='up-prob'></div><div class='down-prob'></div>"
-			+ "</div></div>");
+			+ "</div>");
 		$("#qubitElements").append(this.$div);
 		qubits.push(this);
 		qubits.arrange();
@@ -97,13 +99,39 @@ function Qubit(qubitState) {
 }
 
 Qubit.prototype.render = function(size) {
-	this.$div.css({
+	var $thisDiv = this.$div;
+
+	// Move up-prob only
+	$thisDiv.css({
 		"width": (size / rem) + "rem",
-		"height": (size / rem) + "rem",
-		"-webkit-transform": "translate(-50%, -50%)"
-	}).children(".prob-div").children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
-	console.log(this.UP.prob * 100);
-	return this.$div;
+		"height": (size / rem) + "rem"
+	}).children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
+
+	// Seth math magic to move circles around
+	// Ex to play with: ((u2 1 0.3 1.6 1 0))
+	$thisDiv.children(".phase-up").css({"-webkit-transform":
+		"translate(-50%, -50%) rotate(" + this.UP.phase
+		+ "deg) translateY("
+		+ -(size/2 - .11 * size) / rem + "rem)"});
+
+	$thisDiv.children(".phase-down").css({"-webkit-transform":
+		"translate(-50%, -50%) rotate(" + this.DOWN.phase
+		+ "deg) translateY("
+		+ -(size/2 - .11 * size) / rem + "rem)"});
+
+	// // Calculate position of each circle (-180 - 180)
+	// // This should be elsewhere
+	// var circRadius = $(".circle").outerWidth()/2
+	// , qRadius = $(".qubit").outerWidth()/2
+	// , newUpX = qRadius * Math.sin(this.UP.phase)
+	// , newUpY = qRadius * Math.cos(this.UP.phase)
+	// , newDownX = qRadius * Math.sin(this.DOWN.phase)
+	// , newDownY = qRadius * Math.cos(this.DOWN.phase)
+	// ;
+	// // Place circles
+	// $thisDiv.children(".phase-up").css({left: newUpX + "px", top: newUpY + "px"});
+	// $thisDiv.children(".phase-down").css({left: newDownX + "px", top: newDownY + "px"});
+	return $thisDiv;
 }
 
 Qubit.prototype.reset = function() {
