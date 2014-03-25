@@ -253,12 +253,12 @@ Qubit.prototype.render = function(size) {
 
 	// Seth math magic to move circles around
 	// Ex to play with: ((u2 1 0.3 1.6 1 0))
-	$thisDiv.children(".phase-up").css({"transform":
+	$thisDiv.children(".up-phase").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.UP.phase
 		+ "deg) translateY("
 		+ -(size/2 - .11 * size) / rem + "rem)"});
 
-	$thisDiv.children(".phase-down").css({"transform":
+	$thisDiv.children(".down-phase").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.DOWN.phase
 		+ "deg) translateY("
 		+ -(size/2 - .11 * size) / rem + "rem)"});
