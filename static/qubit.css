@@ -11,3 +11,61 @@
 * 
 */
 
+.circle {
+	position: absolute;
+    width: 20px;
+    height: 20px;
+    -webkit-border-radius: 25px;
+    -moz-border-radius: 25px;
+    border-radius: 25px;
+	-webkit-user-select: none; /* Chrome/Safari */        
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+ */
+	/* Rules below not implemented in browsers yet
+	(noted in '11) */
+	-o-user-select: none;
+	user-select: none;
+}
+
+.phase-up {
+	background-color: white;
+}
+
+.phase-down {
+    background-color: black;
+}
+
+/* Padding for .prob-div */
+.value {
+	height: 30%;
+}
+
+.prob-div {
+	position: relative;
+	margin: 0 auto;
+	width: 40%;
+	height: 40%;
+	overflow: hidden;
+	border: 1px solid gray;
+	-webkit-user-select: none; /* Chrome/Safari */        
+	-moz-user-select: none; /* Firefox */
+	-ms-user-select: none; /* IE10+ */
+	/* Rules below not implemented in browsers yet
+	(noted in '11) */
+	-o-user-select: none;
+	user-select: none;
+}
+
+.prob-up {
+    height: 80%;
+    background-color: black;
+}
+
+.prob-down {
+	height: 20%;
+	background-color: white;
+}
+
+.prob-diff {
+	pointer-events: none;
+}
