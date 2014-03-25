@@ -24,13 +24,13 @@ $(document).ready(function() {
 	, canDragPhase = false, canDragProb = false
 	, $toDrag = null, $probDiv = null
 	// , $circle = $(".circle"), circRadius = $circle.outerWidth()/2
-	// , $qubit = $(".one-qubit"), qRadius = $qubit.outerWidth()/2
+	, $qubit = $(".qubit"), qRadius = $qubit.outerWidth()/2
 	// , radius = 70
 	;
 
 	// When mouse moves on circle (perhaps make this
 	// on any manipulatable element)
-	$(".one-qubit").on("mousemove", function (evt) {
+	$("#qubitElements").on("mousemove", function (evt) {
 		// For some reason, while dragging mousemove works
 		// even out of .one-qubit, but it
 		// DIDN'T work when the same was done for .circle
@@ -53,16 +53,15 @@ $(document).ready(function() {
 
 	// *** EVENT LISTENERS ***\\
 	// Start dragging on mousedown
-	$("#qubitElements").on("mousedown", ".circle", function (evt) {
+	$("#visualizer").on("mousedown", ".circle", function (evt) {
 		// console.log(".circle");
 		// Set an item to drag, allow it to be dragged
 		$toDrag = $(this);
 		canDragPhase = true;
-		evt.stopPropagation();
 	});
 
 	$("#qubitElements").on("mousedown", ".prob-div", function (evt) {
-		console.log(".prob-div");
+		// console.log(".prob-div");
 		// Drag the prob where they take it
 		var $this = $(this);
 		$probDiv = $(evt.target).parent();
@@ -70,7 +69,6 @@ $(document).ready(function() {
 		// Change midpoint on click as well
 		mouseX = evt.pageX; mouseY = evt.pageY;
 		dragProb($probDiv);
-		evt.stopPropagation();
 	})
 	;
 
@@ -83,10 +81,10 @@ $(document).ready(function() {
 		canDragProb = false;
 	})
 
-	// Testing
-	$(document).on("mousedown", function (evt) {
-		console.log($(evt.target).attr("class"));
-	})
+	// // Testing
+	// $(document).on("mousedown", function (evt) {
+	// 	console.log($(evt.target).attr("class"));
+	// })
 
 	function dragCircle($container) {
 		/* ($ object) -> None
@@ -224,13 +222,16 @@ function Qubit(qubitState) {
 		}
 		this.label = qubits.length;
 		// One qubit div
-		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'>"
+		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'"
+			+ " data-qubitobj=" + this + ">"
 			+ "<div class='prob-div'>"
 				+ "<div class='up-prob'></div><div class='down-prob'></div>"
 			+ "</div>"
 			// The orbiting circle divs
 			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
 			+ "</div>");
+		console.log(this.$div);
+		console.log(this.$div.data("qubitobj"));
 		$("#qubitElements").append(this.$div);
 		qubits.push(this);
 		qubits.render();
