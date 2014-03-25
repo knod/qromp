@@ -1,6 +1,6 @@
 /* qubit.css
 * Created by: 
-* Date:
+* Date: 03/24/14
 * qubit styles
 * 
 * Sources:
@@ -10,6 +10,10 @@
 * DONE:
 * 
 */
+
+#qubitElements {
+	opacity: .5;
+}
 
 .circle {
 	position: absolute;
@@ -56,13 +60,13 @@
 	user-select: none;
 }
 
-.prob-up {
-    height: 80%;
+.up-prob {
+    /*height: 100%;*/
     background-color: black;
 }
 
-.prob-down {
-	height: 20%;
+.down-prob {
+	/*height: 0%;*/
 	background-color: white;
 }
 
