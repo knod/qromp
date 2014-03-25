@@ -11,11 +11,18 @@
 * 
 */
 
+/* Probably better not to use opacity for cross-browser compatability? */
 #qubitElements {
-	opacity: .5;
+	opacity: .5 !important;
+	pointer-events: none;
+}
+
+.qubit {
+	background-color: #495199;
 }
 
 .circle {
+	pointer-events: auto;
 	position: absolute;
     width: 20px;
     height: 20px;
@@ -31,26 +38,28 @@
 	user-select: none;
 }
 
-.phase-up {
-	background-color: white;
+.phase-down {
+    background-color: white;
 }
 
-.phase-down {
-    background-color: black;
+.phase-up {
+	background-color: black;
 }
 
 /* Padding for .prob-div */
-.value {
+.prob-spacer {
+	position: relative;
 	height: 30%;
 }
 
 .prob-div {
+	pointer-events: auto;
 	position: relative;
 	margin: 0 auto;
 	width: 40%;
 	height: 40%;
 	overflow: hidden;
-	border: 1px solid gray;
+	/*border: 1px solid gray;*/
 	-webkit-user-select: none; /* Chrome/Safari */        
 	-moz-user-select: none; /* Firefox */
 	-ms-user-select: none; /* IE10+ */
@@ -60,14 +69,14 @@
 	user-select: none;
 }
 
-.up-prob {
-    /*height: 100%;*/
-    background-color: black;
-}
-
 .down-prob {
 	/*height: 0%;*/
-	background-color: white;
+	background-color: black;
+}
+
+.up-prob {
+    /*height: 100%;*/
+    background-color: white;
 }
 
 .prob-diff {
