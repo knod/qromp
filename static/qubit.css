@@ -15,6 +15,7 @@
 #qubitElements {
 	opacity: .5 !important;
 	pointer-events: none;
+	cursor: default;
 }
 
 .qubit {
@@ -47,15 +48,16 @@
 }
 
 /* Padding for .prob-div */
-.prob-spacer {
+/*.prob-spacer {
 	position: relative;
 	height: 30%;
-}
+}*/
 
 .prob-div {
 	pointer-events: auto;
 	position: relative;
 	margin: 0 auto;
+	padding-top: 30%;
 	width: 40%;
 	height: 40%;
 	overflow: hidden;
