@@ -121,10 +121,14 @@ $(document).ready(function() {
 
 		// Change phase values
 		if ($toDrag.hasClass("phase-up")) {
-			this.UP.phase = angleToMouse;
+			console.log(angleToMouse);
+			console.log($toDrag.parent().data("qubitobj"));
+			// this.UP.phase = angleToMouse;
 		}
 		else {
-			this.DOWN.phase = angleToMouse;
+			console.log(angleToMouse);
+			console.log($toDrag.parent().data("qubitobj"));
+			// this.DOWN.phase = angleToMouse;
 		}
 
 		$container.render();
