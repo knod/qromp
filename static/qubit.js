@@ -18,6 +18,132 @@
 * 
 */
 
+$(document).ready(function() {
+	// *** SETUP ***\\
+	var mouseX = null, mouseY = null
+	, canDragPhase = false, canDragProb = false
+	, $toDrag = null, $probDiv = null
+	// , $circle = $(".circle"), circRadius = $circle.outerWidth()/2
+	// , $qubit = $(".one-qubit"), qRadius = $qubit.outerWidth()/2
+	// , radius = 70
+	;
+
+	// When mouse moves on circle (perhaps make this
+	// on any manipulatable element)
+	$(".one-qubit").on("mousemove", function (evt) {
+		// For some reason, while dragging mousemove works
+		// even out of .one-qubit, but it
+		// DIDN'T work when the same was done for .circle
+		// (though it doesn't do as well outside .one-qubit)
+		var $this = $(this);
+
+		// If the mouse is down on an object
+		if (canDragPhase) {
+			// Get coords of the mouse
+			mouseX = evt.pageX; mouseY = evt.pageY;
+			dragCircle($this);
+		}
+		if (canDragProb) {
+			// Get coords of the mouse
+			mouseX = evt.pageX; mouseY = evt.pageY;
+			dragProb($probDiv);
+		}
+	})
+	;
+
+	// *** EVENT LISTENERS ***\\
+	// Start dragging on mousedown
+	$(".circle").on("mousedown", function () {
+		// Set an item to drag, allow it to be dragged
+		$toDrag = $(this);
+		canDragPhase = true;
+	});
+
+	$(".qubit").on("mousedown", function (evt) {
+		// Drag the prob where they take it
+		var $this = $(this);
+		$probDiv = $(evt.target).parent();
+		canDragProb = true;
+		// Change midpoint on click as well
+		mouseX = evt.pageX; mouseY = evt.pageY;
+		dragProb($probDiv);
+	})
+	;
+
+	// On document so that if they go out of the
+	// div without lifting the mouse, dragging will
+	// still stop
+	// Stop dragging on mouseup
+	$(document).on("mouseup", function() {
+		canDragPhase = false;
+		canDragProb = false;
+	})
+
+	function dragCircle($container) {
+		/* ($ object) -> None
+
+		Drag the circle in its idiom:
+		-- s-man --
+		Find the angle between the center and your mouse.
+		Make that the angle between the center and the
+		object and then use the distance to place it
+		*/
+
+		// Angle between center and mouse
+		// Get center pos relative to screen
+		var qPageCenterX = $container.offset().left + qRadius;
+		var qPageCenterY = $container.offset().top + qRadius;
+		var angleToMouse = Math.atan2((mouseX-qPageCenterX), (mouseY-qPageCenterY));
+		// For getting the text value: * (180/Math.PI) +
+		// whatever number will put 0 where you want it
+
+		// // Put the dot at a certain radius at that angle
+		// // (remember to put the arc at the center of the
+		// // object by subtracting its own radius)
+		// var newX = qRadius + radius * Math.sin(angleToMouse) - circRadius;
+		// var newY = qRadius + radius * Math.cos(angleToMouse) - circRadius;
+		// $toDrag.css({left: newX, top: newY});
+
+	// 	// Get and display the new value
+	// 	phaseVal = Math.round(270 + (angleToMouse * (180/Math.PI))) % 360;
+	// 	// Do it for the right one though
+	// 	if ($toDrag.hasClass("phase-up")) {
+	// 		$container.find(".phase-up-num").text(phaseVal);
+	// 	}
+	// 	else {$container.find(".phase-down-num").text(phaseVal);}
+
+		// Change phase values
+		if ($toDrag.hasClass("phase-up")) {
+			this.UP.phase = angleToMouse;
+		}
+		else {
+			this.DOWN.phase = angleToMouse;
+		}
+
+		$container.render();
+	}
+
+	function dragProb($probDiv) {
+		/* ($ object) -> None
+
+		Drag the rectangles in their idiom - their
+		meeting point is wherever the mouse goes.
+		Max of 100, min of 0
+		*/
+
+		// // http://stackoverflow.com/questions/14651306/get-mouse-position-within-div
+		// // New meeting point for the prob divs
+		// var newMidpoint = mouseY - $probDiv.offset().top;
+		// // Limit it to max 100, min 0
+		// newMidpoint = Math.min($probDiv.innerHeight(), Math.max(0, newMidpoint));
+		// // Change the heights of the probability divs
+		// $probDiv.find(".prob-up").css({height: newMidpoint + "px"});
+		// var downHeight = $probDiv.innerHeight() - newMidpoint;
+		// $probDiv.find(".prob-down").css({height: downHeight + "px"});
+	}
+});
+
+
 var qubits = [];
 
 qubits.arrange = function(percentMargin, percentSpacing) {
@@ -42,7 +168,7 @@ qubits.render = function(size, radius, yOffset) {
 	$("#qubitsElements").css({"margin-top": (yOffset || 0) / rem + "rem"});
 	for (var i = 0, angle = 180; i < numQubits; i++, angle += 360 / numQubits){
 		this[i].render(size).css({
-			"-webkit-transform": "translate(-50%, -50%) rotate(" +
+			"transform": "translate(-50%, -50%) rotate(" +
 			angle + "deg) translateY(" +
 			radius / rem + "rem) rotate(-" +
 			angle + "deg)"
@@ -109,12 +235,12 @@ Qubit.prototype.render = function(size) {
 
 	// Seth math magic to move circles around
 	// Ex to play with: ((u2 1 0.3 1.6 1 0))
-	$thisDiv.children(".phase-up").css({"-webkit-transform":
+	$thisDiv.children(".phase-up").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.UP.phase
 		+ "deg) translateY("
 		+ -(size/2 - .11 * size) / rem + "rem)"});
 
-	$thisDiv.children(".phase-down").css({"-webkit-transform":
+	$thisDiv.children(".phase-down").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.DOWN.phase
 		+ "deg) translateY("
 		+ -(size/2 - .11 * size) / rem + "rem)"});

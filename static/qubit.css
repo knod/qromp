@@ -24,7 +24,7 @@
 
 /* Probably better not to use opacity for cross-browser compatability? */
 #qubitElements {
-	opacity: .5 !important;
+	opacity: .75 !important;
 }
 
 .qubit {
