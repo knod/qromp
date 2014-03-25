@@ -71,11 +71,20 @@
 
 .prob-div {
 	position: relative;
+<<<<<<< HEAD
 	/*margin: 0 auto;*/
 	/*padding-top: 25%;*/
 	width: 100%;
 	height: 100%;
 	overflow: hidden;
+
+=======
+	margin: 0 auto;
+	padding-top: 25%;
+	width: 50%;
+	height: 50%;
+	overflow: hidden;
+>>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 	/*border: 1px solid gray;*/
 }
 
@@ -89,6 +98,12 @@
     background-color: white;
 }
 
+<<<<<<< HEAD
 /*.prob-diff {
 	pointer-events: none;
 }*/
+=======
+.prob-diff {
+	pointer-events: none;
+}
+>>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024

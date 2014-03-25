@@ -24,21 +24,13 @@ $(document).ready(function() {
 	, canDragPhase = false, canDragProb = false
 	, $toDrag = null, $probDiv = null
 	// , $circle = $(".circle"), circRadius = $circle.outerWidth()/2
-<<<<<<< HEAD
-	, $qubit = $(".qubit"), qRadius = $qubit.outerWidth()/2
-=======
 	// , $qubit = $(".one-qubit"), qRadius = $qubit.outerWidth()/2
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 	// , radius = 70
 	;
 
 	// When mouse moves on circle (perhaps make this
 	// on any manipulatable element)
-<<<<<<< HEAD
-	$("#qubitElements").on("mousemove", function (evt) {
-=======
 	$(".one-qubit").on("mousemove", function (evt) {
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 		// For some reason, while dragging mousemove works
 		// even out of .one-qubit, but it
 		// DIDN'T work when the same was done for .circle
@@ -61,23 +53,13 @@ $(document).ready(function() {
 
 	// *** EVENT LISTENERS ***\\
 	// Start dragging on mousedown
-<<<<<<< HEAD
-	$("#visualizer").on("mousedown", ".circle", function (evt) {
-		// console.log(".circle");
-=======
 	$(".circle").on("mousedown", function () {
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 		// Set an item to drag, allow it to be dragged
 		$toDrag = $(this);
 		canDragPhase = true;
 	});
 
-<<<<<<< HEAD
-	$("#qubitElements").on("mousedown", ".prob-div", function (evt) {
-		// console.log(".prob-div");
-=======
 	$(".qubit").on("mousedown", function (evt) {
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 		// Drag the prob where they take it
 		var $this = $(this);
 		$probDiv = $(evt.target).parent();
@@ -97,14 +79,6 @@ $(document).ready(function() {
 		canDragProb = false;
 	})
 
-<<<<<<< HEAD
-	// // Testing
-	// $(document).on("mousedown", function (evt) {
-	// 	console.log($(evt.target).attr("class"));
-	// })
-
-=======
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 	function dragCircle($container) {
 		/* ($ object) -> None
 
@@ -172,36 +146,6 @@ $(document).ready(function() {
 
 var qubits = [];
 
-<<<<<<< HEAD
-qubits.render = function() {
-	var n = this.length,
-		theta = 2 * Math.PI / n,
-		T = Math.tan(theta / 2),
-		radius = 0,
-		visSpace = Math.min($visualizer.height(), $visualizer.width()),
-		size = visSpace;
-	if (n > 1) {
-		if (n === 2) {
-			size = visSpace / 2;
-			radius = (visSpace - size) / 2;
-		} else if (n % 2 === 0) {
-			size = visSpace * T / (1 + 2 * T);
-			radius = (visSpace - size) / 2;
-		} else {
-			var phi = theta * (n - 1) / 2,
-				psi = phi / 2 - Math.PI / 4; 
-			size = 2 * visSpace / (Math.SQRT2 * ((1 + 1 / T) * Math.sqrt(1 - Math.cos(phi)) + 2 * Math.cos(psi)));
-			radius = size / 2 + (size / 2) / T;
-			var yOffset = (radius + size * (1 / 2 - 1 / (2 * Math.sin(theta / 2)) - Math.cos(theta / 2))) / 2;
-		}
-	}
-	$("#qubitElements").css({"margin-top": (yOffset || 0) / rem + "rem"});
-	for (var i = 0, angle = 180; i < n; i++, angle += 360 / n){
-		this[i].render(.8 * size).css({
-			"-webkit-transform": "translate(-50%, -50%) rotate(" +
-			angle + "deg) translateY(" +
-			radius / rem + "rem)"
-=======
 qubits.arrange = function(percentMargin, percentSpacing) {
 	var percentMargin = percentMargin || .9,
 		percentSpacing = percentSpacing || .1,
@@ -228,7 +172,6 @@ qubits.render = function(size, radius, yOffset) {
 			angle + "deg) translateY(" +
 			radius / rem + "rem) rotate(-" +
 			angle + "deg)"
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 		});
 	}
 }
@@ -240,11 +183,7 @@ qubits.update = function(qubitStates) {
 		} else {
 			this[i].UP = qubitStates[i].UP;
 			this[i].DOWN = qubitStates[i].DOWN;
-<<<<<<< HEAD
-			this.render();
-=======
 			this.arrange();
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 		}
 	}
 }
@@ -253,11 +192,7 @@ qubits.pop = function() {
 	if (this.length > 1){
 		this[this.length - 1].$div.remove();
 		Array.prototype.pop.call(this);
-<<<<<<< HEAD
-		this.render();
-=======
 		this.arrange();
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 	}
 }
 
@@ -278,21 +213,6 @@ function Qubit(qubitState) {
 		}
 		this.label = qubits.length;
 		// One qubit div
-<<<<<<< HEAD
-		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'"
-			+ " data-qubitobj=" + this + ">"
-			+ "<div class='prob-div'>"
-				+ "<div class='up-prob'></div><div class='down-prob'></div>"
-			+ "</div>"
-			// The orbiting circle divs
-			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
-			+ "</div>");
-		console.log(this.$div);
-		console.log(this.$div.data("qubitobj"));
-		$("#qubitElements").append(this.$div);
-		qubits.push(this);
-		qubits.render();
-=======
 		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'>"
 			// The orbiting circle divs
 			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
@@ -301,7 +221,6 @@ function Qubit(qubitState) {
 		$("#qubitElements").append(this.$div);
 		qubits.push(this);
 		qubits.arrange();
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 	}
 }
 
@@ -312,11 +231,7 @@ Qubit.prototype.render = function(size) {
 	$thisDiv.css({
 		"width": (size / rem) + "rem",
 		"height": (size / rem) + "rem"
-<<<<<<< HEAD
-	}).children(".prob-div").children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
-=======
 	}).children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
->>>>>>> 5343172bdcc189fa394284f8d0ccc34eff2f7024
 
 	// Seth math magic to move circles around
 	// Ex to play with: ((u2 1 0.3 1.6 1 0))
