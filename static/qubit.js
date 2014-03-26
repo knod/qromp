@@ -24,7 +24,7 @@ $(document).ready(function() {
 	, canDragPhase = false, canDragProb = false
 	, $toDrag = null, $probDiv = null
 	// , $circle = $(".circle"), circRadius = $circle.outerWidth()/2
-	, $qubit = $(".qubit"), qRadius = $qubit.outerWidth()/2
+	// , $qubit = $(".qubit"), qRadius = $qubit.outerWidth()/2
 	// , radius = 70
 	;
 
@@ -96,42 +96,34 @@ $(document).ready(function() {
 		object and then use the distance to place it
 		*/
 
-		// Angle between center and mouse
-		// Get center pos relative to screen
-		var qPageCenterX = $container.offset().left + qRadius;
-		var qPageCenterY = $container.offset().top + qRadius;
-		var angleToMouse = Math.atan2((mouseX-qPageCenterX), (mouseY-qPageCenterY));
-		// For getting the text value: * (180/Math.PI) +
-		// whatever number will put 0 where you want it
+		var qAngle = $toDrag.parent().data("angle");
 
-		// // Put the dot at a certain radius at that angle
-		// // (remember to put the arc at the center of the
-		// // object by subtracting its own radius)
-		// var newX = qRadius + radius * Math.sin(angleToMouse) - circRadius;
-		// var newY = qRadius + radius * Math.cos(angleToMouse) - circRadius;
-		// $toDrag.css({left: newX, top: newY});
+		var clientRect = $toDrag.parent()[0].getBoundingClientRect();
+		var qCenterX = clientRect.left + clientRect.width/2;
+		var qCenterY = clientRect.top + clientRect.height/2;
+		var angleToMouse = Math.atan2((mouseX - qCenterX), (mouseY - qCenterY));
+		var newAngle = angleToMouse * (180/Math.PI);
+		// Get it to mesh with o's numbers :P
+		// Get 0 to be at the "top" of the qubit
+		if (newAngle <=0) {newAngle += 180;}
+		else {newAngle -= 180;}
+		// (not quite right) Account for the qubit's existing angle
+		newAngle += qAngle;
+		// Get it to travel in the right direction
+		newAngle = -newAngle;
 
-	// 	// Get and display the new value
-	// 	phaseVal = Math.round(270 + (angleToMouse * (180/Math.PI))) % 360;
-	// 	// Do it for the right one though
-	// 	if ($toDrag.hasClass("phase-up")) {
-	// 		$container.find(".phase-up-num").text(phaseVal);
-	// 	}
-	// 	else {$container.find(".phase-down-num").text(phaseVal);}
+		var qubitObj = $toDrag.parent().data("qubitobj");
 
 		// Change phase values
-		if ($toDrag.hasClass("phase-up")) {
-			console.log(angleToMouse);
-			console.log($toDrag.parent().data("qubitobj"));
-			// this.UP.phase = angleToMouse;
+		if ($toDrag.hasClass("up-phase")) {
+			qubitObj.UP.phase = newAngle;
 		}
 		else {
-			console.log(angleToMouse);
-			console.log($toDrag.parent().data("qubitobj"));
-			// this.DOWN.phase = angleToMouse;
+			qubitObj.DOWN.phase = newAngle;
 		}
 
-		$container.render();
+		// Rerender everything
+		qubits.render();
 	}
 
 	function dragProb($probDiv) {
@@ -180,12 +172,14 @@ qubits.render = function() {
 		}
 	}
 	$("#qubitElements").css({"margin-top": (yOffset || 0) / rem + "rem"});
-	for (var i = 0, angle = 180; i < n; i++, angle += 360 / n){
+	for (var i = 0, angle = 0; i < n; i++, angle += 360 / n){
 		this[i].render(.8 * size).css({
-			"-webkit-transform": "translate(-50%, -50%) rotate(" +
+			"transform": "translate(-50%, -50%) rotate(" +
 			angle + "deg) translateY(" +
-			radius / rem + "rem)"
-		});
+			-radius / rem + "rem)"
+		})
+		.data("angle", angle)
+		;
 	}
 }
 
@@ -226,16 +220,14 @@ function Qubit(qubitState) {
 		}
 		this.label = qubits.length;
 		// One qubit div
-		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'"
-			+ " data-qubitobj=" + this + ">"
+		this.$div = $("<div id='qubit-"+ this.label +"' class='qubit'>"
 			+ "<div class='prob-div'>"
 				+ "<div class='up-prob'></div><div class='down-prob'></div>"
 			+ "</div>"
 			// The orbiting circle divs
-			+ "<div class='circle phase-up'></div><div class='circle phase-down'></div>"
+			+ "<div class='circle down-phase'></div><div class='circle up-phase'></div>"
 			+ "</div>");
-		console.log(this.$div);
-		console.log(this.$div.data("qubitobj"));
+		this.$div.data("qubitobj", this);
 		$("#qubitElements").append(this.$div);
 		qubits.push(this);
 		qubits.render();
@@ -245,36 +237,18 @@ function Qubit(qubitState) {
 Qubit.prototype.render = function(size) {
 	var $thisDiv = this.$div;
 
-	// Move up-prob only
 	$thisDiv.css({
 		"width": (size / rem) + "rem",
 		"height": (size / rem) + "rem"
-	}).children(".prob-div").children(".up-prob").css({"height": this.UP.prob * 100 + "%"});
-
-	// Seth math magic to move circles around
-	// Ex to play with: ((u2 1 0.3 1.6 1 0))
-	$thisDiv.children(".up-phase").css({"transform":
+	}).find(".up-prob").css({"height": this.UP.prob * 100 + "%"});
+	$thisDiv.find(".up-phase").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.UP.phase
 		+ "deg) translateY("
-		+ -(size/2 - .11 * size) / rem + "rem)"});
-
-	$thisDiv.children(".down-phase").css({"transform":
+		+ -(size/2 - .1 * size) / rem + "rem)"});
+	$thisDiv.find(".down-phase").css({"transform":
 		"translate(-50%, -50%) rotate(" + this.DOWN.phase
 		+ "deg) translateY("
-		+ -(size/2 - .11 * size) / rem + "rem)"});
-
-	// // Calculate position of each circle (-180 - 180)
-	// // This should be elsewhere
-	// var circRadius = $(".circle").outerWidth()/2
-	// , qRadius = $(".qubit").outerWidth()/2
-	// , newUpX = qRadius * Math.sin(this.UP.phase)
-	// , newUpY = qRadius * Math.cos(this.UP.phase)
-	// , newDownX = qRadius * Math.sin(this.DOWN.phase)
-	// , newDownY = qRadius * Math.cos(this.DOWN.phase)
-	// ;
-	// // Place circles
-	// $thisDiv.children(".phase-up").css({left: newUpX + "px", top: newUpY + "px"});
-	// $thisDiv.children(".phase-down").css({left: newDownX + "px", top: newDownY + "px"});
+		+ -(size/2 - .1 * size) / rem + "rem)"});
 	return $thisDiv;
 }
 
