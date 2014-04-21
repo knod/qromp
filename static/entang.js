@@ -14,7 +14,6 @@ var entang = {
 	prevLayout: null,
 	arc: null,
 	path: null,
-	innerRadius: null,
 
 	/* (int, int) -> array of ints
 
@@ -88,17 +87,17 @@ var entang = {
 		// // In place of "neighborhoods". I don't understand what's going on
 		// // Is this the matrix? Don't think it's needed here.
 		// var entanglement = matrix;
-		entang.innerRadius = outerRadius/1.1;
+		var innerRadius = outerRadius/1.1;
 		var rotation = -(360/matrix.length)/2;
 
 		//create the arc path data generator for the groups
 		entang.arc = d3.svg.arc()
-		    .innerRadius(entang.innerRadius)
+		    .innerRadius(innerRadius)
 		    .outerRadius(outerRadius);
 
 		//create the chord path data generator for the chords
 		entang.path = d3.svg.chord()
-		    .radius(entang.innerRadius);
+		    .radius(innerRadius);
 
 		// svg = d3.select("#qubit-svg")
 		qubitsvg = d3.select("#qubit-svg")
@@ -118,7 +117,7 @@ var entang = {
 		//   .enter().append("path")
 		//     .style("fill", function(d) { return fill(d.index); })
 		//     .style("stroke", function(d) { return fill(d.index); })
-		//     .attr("d", d3.svg.arc().innerRadius(entang.innerRadius).outerRadius(outerRadius))
+		//     .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
 		//     .on("mouseover", entang.fade(.1))
 		//     .on("mouseout", entang.fade(1));
 
@@ -127,7 +126,7 @@ var entang = {
 		//   .selectAll("path")
 		//     .data(chord.chords)
 		//   .enter().append("path")
-		//     .attr("d", d3.svg.chord().radius(entang.innerRadius))
+		//     .attr("d", d3.svg.chord().radius(innerRadius))
 		//     .style("fill", function(dat) { return fill(dat.target.index); })
 		//     .style("opacity", 1);
 
@@ -139,11 +138,14 @@ var entang = {
 	/* (?) -> None
 
 	Shoud handle the animation from one chord state to
-	another, not sure how yet.
+	another, not sure how yet. Also runs to animate the start
+
+	Why does it start out as black?
 	*/
 	updateChord: function (qubitsvg, matrix) {
 
-		var matrix = matrix || [
+		var matrix = // matrix || 
+		[
 			  [100, 20, 30, 0],
 			  [20, 100, 0, 0],
 			  [30, 0, 100, 0],
@@ -156,7 +158,7 @@ var entang = {
 	    layout.matrix(matrix);
 
 	    /* Create/update "group" elements */
-	    var groupG = qubitsvg.selectAll("g.group")
+	    var groupG = qubitsvg.selectAll("g.entang")
 	        .data(layout.groups(), function (d) {
 	            return d.index; 
 	            //use a key function in case the 
@@ -169,34 +171,44 @@ var entang = {
 	            .attr("opacity", 0)
 	            .remove(); //remove after transitions are complete
 
-        var newGroups = groupG.enter().append("g")
-	        .attr("class", "group");
-
-
+	    // Colors
+// !!! Why are the paths not accessing colors? Had to use .source !!!
+// !!! Why are the paths starting out as colors? !!!
 		var fill = d3.scale.ordinal()
 		    .domain(d3.range(4))
 		    // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
 		    .range(["#9986b3", "red", "green", "blue"]);
 
+        var newGroups = groupG.enter().append("g")
+	        .attr("class", "entang");
+
 		//create the arc paths and set the constant attributes
 	    //(those based on the group index, not on the value)
 		newGroups.append("path")
-		    .attr("d", d3.svg.chord().radius(entang.innerRadius))
-		    .style("fill", function(dat) { return fill(dat.target.index); })
-		    .style("opacity", 1);
+		    .attr("id", function (d) {
+	            return "entang" + d.index;
+	            //using d.index and not i to maintain consistency
+	            //even if groups are sorted
+	        })
+		    .style("fill", function(d) { return fill(d.index); })
+			.style("stroke", function(d) { return fill(d.index); })
+		    ;
+
+		// Hide self-referential/non-paired paths for qromp
+		entang.hideOwn();
 
 		//update the paths to match the layout
 	    groupG.select("path") 
 	        .transition()
 	            .duration(1500)
 	            // .attr("opacity", 0.5) //optional, just to observe the transition
-	        .attrTween("d", arcTween( last_layout ))
+	        .attrTween("d", entang.arcTween( entang.prevLayout ))
 	            // .transition().duration(100).attr("opacity", 1) //reset opacity
 	        ;
 
 	     /* Create/update the chord paths */
 	    var chordPaths = qubitsvg.selectAll("path.chord")
-	        .data(layout.chords(), chordKey );
+	        .data(layout.chords(), entang.chordKey );
 	        	// ~~~ What this mean, yo?
 	            //specify a key function to match chords
 	            //between updates
@@ -216,9 +228,9 @@ var entang = {
 	    chordPaths.transition()
 	        .duration(1500)
 	        // .attr("opacity", 0.5) //optional, just to observe the transition
-	        .style("fill", function(d) { return fill(d.index); })
-		    .style("stroke", function(d) { return fill(d.index); })
-	        .attrTween("d", chordTween(last_layout))
+	        .style("fill", function(d) { return fill(d.source.index); })
+		    .style("stroke", function(d) { return fill(d.source.index); })
+	        .attrTween("d", entang.chordTween(entang.prevLayout))
 	        // .transition().duration(100).attr("opacity", 1) //reset opacity
 	    ;
 
@@ -228,9 +240,6 @@ var entang = {
 	    //chordPaths selection
 	    groupG.on("mouseover", entang.fade(.1))
 		    .on("mouseout", entang.fade(1));
-
-		// Hide self-referential/non-paired paths for qromp
-		entang.hideOwn();
 
 		entang.prevLayout = layout; //save for next update
 
@@ -291,7 +300,7 @@ var entang = {
 	    
 	    if (oldLayout) {
 	        oldLayout.chords().forEach( function(chordData) {
-	            oldChords[ chordKey(chordData) ] = chordData;
+	            oldChords[ entang.chordKey(chordData) ] = chordData;
 	        });
 	    }
 	    
@@ -299,7 +308,7 @@ var entang = {
 	        //this function will be called for each active chord
 	        
 	        var tween;
-	        var old = oldChords[ chordKey(d) ];
+	        var old = oldChords[ entang.chordKey(d) ];
 	        if (old) {
 	            //old is not undefined, i.e.
 	            //there is a matching old chord value
@@ -349,7 +358,7 @@ var entang = {
 	// *** Custom for qromp *** //
 	hideOwn: function () {
 		// Unless the path crosses to somewhere, it's opacity will be 0
-		svg.selectAll(".chord path")
+		d3.selectAll(".chord path")
 			// Get the paths whose index and subindex match
 			// (the path is refering to its own section)
 			.filter(function (dat) {
