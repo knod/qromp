@@ -11,6 +11,10 @@
 */
 
 var entang = {
+	prevLayout: null,
+	arc: null,
+	path: null,
+	innerRadius: null,
 
 	/* (int, int) -> array of ints
 
@@ -29,6 +33,15 @@ var entang = {
 		return newRow;
 	},
 
+
+	getDefaultLayout: function () {
+		return chord = d3.layout.chord()
+		// padding between sections
+	    .padding(.05)
+	    .sortSubgroups(d3.descending)
+	    .sortChords(d3.ascending) // needed?
+	},
+
 	/* 
 
 	Create the initial matrix for the qubits
@@ -45,127 +58,304 @@ var entang = {
 	createChord: function (matrix, outerRadius, center) {
 		// From http://bl.ocks.org/mbostock/4062006
 		// From http://mkweb.bcgsc.ca/circos/guide/tables/
-		var matrix = matrix || [
-		  [100, 20, 0, 0],
-		  [0, 100, 0, 0],
-		  [0, 0, 100, 0],
-		  [0, 0, 0, 100]
-		];
 
+// !! Take these two first ones out later !!
+		// var matrix = [
+		//   [100, 20, 30, 0],
+		//   [20, 100, 0, 0],
+		//   [30, 0, 100, 0],
+		//   [0, 0, 0, 0],
+		// ];
+
+		// var chord = d3.layout.chord()
+		// 	// padding between sections
+		//     .padding(.05)
+		//     .sortSubgroups(d3.descending)
+		//     .sortChords(d3.ascending) // needed?
+		//     .matrix(matrix);
+
+// !!! Transition stuff starts here !!!
+		// function getDefaultLayout() {
+		// 	return chord = d3.layout.chord()
+		// 	// padding between sections
+		//     .padding(.05)
+		//     .sortSubgroups(d3.descending)
+		//     .sortChords(d3.ascending) // needed?
+		// }
+
+		// // var that needs to be available to updateChord
+		// var prevLayout;
+		// // In place of "neighborhoods". I don't understand what's going on
+		// // Is this the matrix? Don't think it's needed here.
+		// var entanglement = matrix;
+		entang.innerRadius = outerRadius/1.1;
 		var rotation = -(360/matrix.length)/2;
 
-		var chord = d3.layout.chord()
-		    .padding(.05)
-		    .sortSubgroups(d3.descending)
-		    .matrix(matrix);
+		//create the arc path data generator for the groups
+		entang.arc = d3.svg.arc()
+		    .innerRadius(entang.innerRadius)
+		    .outerRadius(outerRadius);
 
-		// var width = 960,
-		//     height = 500,
-		//     innerRadius = Math.min(width, height) * .41,
-		//     outerRadius = innerRadius * 1.1;
+		//create the chord path data generator for the chords
+		entang.path = d3.svg.chord()
+		    .radius(entang.innerRadius);
 
-		var innerRadius = outerRadius/1.1;
-
-		var fill = d3.scale.ordinal()
-		    .domain(d3.range(4))
-		    // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
-		    .range(["#9986b3", "red", "green", "blue"]);
-
-		svg = d3.select("#qubit-svg")
+		// svg = d3.select("#qubit-svg")
+		qubitsvg = d3.select("#qubit-svg")
 		  .append("g")
 		  	.attr("class", "entang")
 		    .attr("transform", "translate(" + center + ") rotate(" + rotation + ")");
 
-		svg.append("g").selectAll("path")
-		    .data(chord.groups)
-		  .enter().append("path")
-		    .style("fill", function(d) { return fill(d.index); })
-		    .style("stroke", function(d) { return fill(d.index); })
-		    .attr("d", d3.svg.arc().innerRadius(innerRadius).outerRadius(outerRadius))
-		    .on("mouseover", fade(.1))
-		    .on("mouseout", fade(1));
+		entang.updateChord(qubitsvg, matrix);
 
-		// var ticks = svg.append("g").selectAll("g")
+		// var fill = d3.scale.ordinal()
+		//     .domain(d3.range(4))
+		//     // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
+		//     .range(["#9986b3", "red", "green", "blue"]);
+
+		// qubitsvg.append("g").selectAll("path")
 		//     .data(chord.groups)
-		//   .enter().append("g").selectAll("g")
-		//     .data(groupTicks)
-		//   .enter().append("g")
-		//     .attr("transform", function(d) {
-		//       return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")"
-		//           + "translate(" + outerRadius + ",0)";
-		//     });
+		//   .enter().append("path")
+		//     .style("fill", function(d) { return fill(d.index); })
+		//     .style("stroke", function(d) { return fill(d.index); })
+		//     .attr("d", d3.svg.arc().innerRadius(entang.innerRadius).outerRadius(outerRadius))
+		//     .on("mouseover", entang.fade(.1))
+		//     .on("mouseout", entang.fade(1));
 
-		// ticks.append("line")
-		//     .attr("x1", 1)
-		//     .attr("y1", 0)
-		//     .attr("x2", 5)
-		//     .attr("y2", 0)
-		//     .style("stroke", "#000");
+		// qubitsvg.append("g")
+		//     .attr("class", "chord")
+		//   .selectAll("path")
+		//     .data(chord.chords)
+		//   .enter().append("path")
+		//     .attr("d", d3.svg.chord().radius(entang.innerRadius))
+		//     .style("fill", function(dat) { return fill(dat.target.index); })
+		//     .style("opacity", 1);
 
-		// ticks.append("text")
-		//     .attr("x", 8)
-		//     .attr("dy", ".35em")
-		//     .attr("transform", function(d) { 
-		//			return d.angle > Math.PI ? "rotate(180)translate(-16)" : null;
-		//		})
-		//     .style("text-anchor", function(d) { return d.angle > Math.PI ? "end" : null; })
-		//     .text(function(d) { return d.label; });
+		// // When everything else is done hide non-paired paths
+		// entang.hideOwn();
 
-		svg.append("g")
-		    .attr("class", "chord")
-		  .selectAll("path")
-		    .data(chord.chords)
-		  .enter().append("path")
-		    .attr("d", d3.svg.chord().radius(innerRadius))
-		    .style("fill", function(d) { return fill(d.target.index); })
-		    .style("opacity", 1);
-
-		// // Returns an array of tick angles and labels, given a group.
-		// function groupTicks(d) {
-		//   var k = (d.endAngle - d.startAngle) / d.value;
-		//   return d3.range(0, d.value, 1000).map(function(v, i) {
-		//     return {
-		//       angle: v * k + d.startAngle,
-		//       label: i % 5 ? null : v / 1000 + "k"
-		//     };
-		//   });
-		// }
-
-		// Returns an event handler for fading a given chord group.
-		function fade(opacity) {
-		  return function(g, indx) {
-		    svg.selectAll(".chord path")
-		        .filter(function(dat) { return dat.source.index != indx && dat.target.index != indx
-		        	// Added by knod to keep own chords hidden (for qromp)
-		        	&& dat.target.index != dat.target.subindex; })
-		      .transition()
-		        .style("opacity", opacity);
-		  };
-		}
-
-		/* Custom code for qromp */
-		// When everything else is done
-		hideOwn();
-
-		function hideOwn() {
-			// Unless the path crosses to somewhere, it's opacity will be 0
-			svg.selectAll(".chord path")
-				// Get the paths whose index and subindex match
-				// (the path is refering to its own section)
-				.filter(function (dat) {
-					return dat.target.index == dat.target.subindex;
-				})
-				.style("opacity", 0);
-		}
-	},
+	},  // end of createChord()
 
 	/* (?) -> None
 
 	Shoud handle the animation from one chord state to
 	another, not sure how yet.
 	*/
-	transChord: function () {
+	updateChord: function (qubitsvg, matrix) {
 
+		var matrix = matrix || [
+			  [100, 20, 30, 0],
+			  [20, 100, 0, 0],
+			  [30, 0, 100, 0],
+			  [0, 0, 0, 0],
+			];
+
+// Reshaped from http://stackoverflow.com/questions/21813723/change-and-transition-dataset-in-chord-diagram-with-d3
+		 /* Compute chord layout. */
+	    var layout = entang.getDefaultLayout(); //create a new layout object
+	    layout.matrix(matrix);
+
+	    /* Create/update "group" elements */
+	    var groupG = qubitsvg.selectAll("g.group")
+	        .data(layout.groups(), function (d) {
+	            return d.index; 
+	            //use a key function in case the 
+	            //groups are sorted differently between updates
+	        });
+
+	    groupG.exit()
+	        .transition()
+	            .duration(1500)
+	            .attr("opacity", 0)
+	            .remove(); //remove after transitions are complete
+
+        var newGroups = groupG.enter().append("g")
+	        .attr("class", "group");
+
+
+		var fill = d3.scale.ordinal()
+		    .domain(d3.range(4))
+		    // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
+		    .range(["#9986b3", "red", "green", "blue"]);
+
+		//create the arc paths and set the constant attributes
+	    //(those based on the group index, not on the value)
+		newGroups.append("path")
+		    .attr("d", d3.svg.chord().radius(entang.innerRadius))
+		    .style("fill", function(dat) { return fill(dat.target.index); })
+		    .style("opacity", 1);
+
+		//update the paths to match the layout
+	    groupG.select("path") 
+	        .transition()
+	            .duration(1500)
+	            // .attr("opacity", 0.5) //optional, just to observe the transition
+	        .attrTween("d", arcTween( last_layout ))
+	            // .transition().duration(100).attr("opacity", 1) //reset opacity
+	        ;
+
+	     /* Create/update the chord paths */
+	    var chordPaths = qubitsvg.selectAll("path.chord")
+	        .data(layout.chords(), chordKey );
+	        	// ~~~ What this mean, yo?
+	            //specify a key function to match chords
+	            //between updates
+
+	    //create the new chord paths
+	    var newChords = chordPaths.enter()
+	        .append("path")
+	        .attr("class", "chord");
+
+	    //handle exiting paths:
+	    chordPaths.exit().transition()
+	        .duration(1500)
+	        .attr("opacity", 0)
+	        .remove();
+
+	    //update the path shape
+	    chordPaths.transition()
+	        .duration(1500)
+	        // .attr("opacity", 0.5) //optional, just to observe the transition
+	        .style("fill", function(d) { return fill(d.index); })
+		    .style("stroke", function(d) { return fill(d.index); })
+	        .attrTween("d", chordTween(last_layout))
+	        // .transition().duration(100).attr("opacity", 1) //reset opacity
+	    ;
+
+// !!! Make this not in a function in future !!!
+		//add the mouseover/fade out behaviour to the groups
+	    //this is reset on every update, so it will use the latest
+	    //chordPaths selection
+	    groupG.on("mouseover", entang.fade(.1))
+		    .on("mouseout", entang.fade(1));
+
+		// Hide self-referential/non-paired paths for qromp
+		entang.hideOwn();
+
+		entang.prevLayout = layout; //save for next update
+
+	}, // end of updateChord()
+
+// Still from http://stackoverflow.com/questions/21813723/change-and-transition-dataset-in-chord-diagram-with-d3
+	arcTween: function (oldLayout) {
+	    //this function will be called once per update cycle
+	    
+	    //Create a key:value version of the old layout's groups array
+	    //so we can easily find the matching group 
+	    //even if the group index values don't match the array index
+	    //(because of sorting)
+	    var oldGroups = {};
+	    if (oldLayout) {
+	        oldLayout.groups().forEach( function(groupData) {
+	            oldGroups[ groupData.index ] = groupData;
+	        });
+	    }
+	    
+	    return function (d, i) {
+	        var tween;
+	        var old = oldGroups[d.index];
+	        if (old) { //there's a matching old group
+	            tween = d3.interpolate(old, d);
+	        }
+	        else {
+	            //create a zero-width arc object
+	            var emptyArc = {startAngle:d.startAngle,
+	                            endAngle:d.startAngle};
+	            tween = d3.interpolate(emptyArc, d);
+	        }
+	        
+	        return function (t) {
+	            return entang.arc( tween(t) );
+	        };
+	    };
+	},  // end arcTween()
+
+	chordKey: function (data) {
+	    return (data.source.index < data.target.index) ?
+	        data.source.index  + "-" + data.target.index:
+	        data.target.index  + "-" + data.source.index;
+	    
+	    //create a key that will represent the relationship
+	    //between these two groups *regardless*
+	    //of which group is called 'source' and which 'target'
+	},
+
+	chordTween: function (oldLayout) {
+	    //this function will be called once per update cycle
+	    
+	    //Create a key:value version of the old layout's chords array
+	    //so we can easily find the matching chord 
+	    //(which may not have a matching index)
+	    
+	    var oldChords = {};
+	    
+	    if (oldLayout) {
+	        oldLayout.chords().forEach( function(chordData) {
+	            oldChords[ chordKey(chordData) ] = chordData;
+	        });
+	    }
+	    
+	    return function (d, i) {
+	        //this function will be called for each active chord
+	        
+	        var tween;
+	        var old = oldChords[ chordKey(d) ];
+	        if (old) {
+	            //old is not undefined, i.e.
+	            //there is a matching old chord value
+	            
+	            //check whether source and target have been switched:
+	            if (d.source.index != old.source.index ){
+	                //swap source and target to match the new data
+	                old = {
+	                    source: old.target,
+	                    target: old.source
+	                };
+	            }
+	            
+	            tween = d3.interpolate(old, d);
+	        }
+	        else {
+	            //create a zero-width chord object
+	            var emptyChord = {
+	                source: { startAngle: d.source.startAngle,
+	                         endAngle: d.source.startAngle},
+	                target: { startAngle: d.target.startAngle,
+	                         endAngle: d.target.startAngle}
+	            };
+	            tween = d3.interpolate( emptyChord, d );
+	        }
+
+	        return function (t) {
+	            //this function calculates the intermediary shapes
+	            return entang.path(tween(t));
+	        };
+	    };
+	},  // end chordTween()
+
+	// *** From first chord diagram example *** //
+	// Returns an event handler for fading a given chord group.
+	fade: function (opacity) {
+	  return function(g, indx) {
+	    svg.selectAll(".chord path")
+	        .filter(function(dat) { return dat.source.index != indx && dat.target.index != indx
+	        	// Added by knod to keep own chords hidden (for qromp)
+	        	&& dat.target.index != dat.target.subindex; })
+	      .transition()
+	        .style("opacity", opacity);
+	  };
+	},
+
+	// *** Custom for qromp *** //
+	hideOwn: function () {
+		// Unless the path crosses to somewhere, it's opacity will be 0
+		svg.selectAll(".chord path")
+			// Get the paths whose index and subindex match
+			// (the path is refering to its own section)
+			.filter(function (dat) {
+				return dat.target.index == dat.target.subindex;
+			})
+			.style("opacity", 0);
 	},
 
 }
