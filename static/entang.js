@@ -14,6 +14,8 @@ var entang = {
 	prevLayout: null,
 	arc: null,
 	path: null,
+	qubitsvg: null,
+	animTime: null,
 
 	/* (int, int) -> array of ints
 
@@ -54,17 +56,18 @@ var entang = {
 	chords provided in matrix. Chords that refer to their own
 	section are given an opacity of 0.
 	*/
-	createChord: function (matrix, outerRadius, center) {
+	createChord: function (matrix, outerRadius, center, animTime) {
 		// From http://bl.ocks.org/mbostock/4062006
 		// From http://mkweb.bcgsc.ca/circos/guide/tables/
 
 // !! Take these two first ones out later !!
-		// var matrix = [
-		//   [100, 20, 30, 0],
-		//   [20, 100, 0, 0],
-		//   [30, 0, 100, 0],
-		//   [0, 0, 0, 0],
-		// ];
+		var matrix = matrix || [
+		  [100, 20, 30, 0],
+		  [20, 100, 0, 0],
+		  [30, 0, 100, 0],
+		  [0, 0, 0, 0],
+		]
+		, outerRadius = outerRadius || 0;
 
 		// var chord = d3.layout.chord()
 		// 	// padding between sections
@@ -89,6 +92,7 @@ var entang = {
 		// var entanglement = matrix;
 		var innerRadius = outerRadius/1.1;
 		var rotation = -(360/matrix.length)/2;
+		entang.animTime = animTime || 500;
 
 		//create the arc path data generator for the groups
 		entang.arc = d3.svg.arc()
@@ -100,19 +104,19 @@ var entang = {
 		    .radius(innerRadius);
 
 		// svg = d3.select("#qubit-svg")
-		qubitsvg = d3.select("#qubit-svg")
+		entang.qubitsvg = d3.select("#qubit-svg")
 		  .append("g")
 		  	.attr("class", "entang")
 		    .attr("transform", "translate(" + center + ") rotate(" + rotation + ")");
 
-		entang.updateChord(qubitsvg, matrix);
+		entang.updateChord(matrix);
 
 		// var fill = d3.scale.ordinal()
 		//     .domain(d3.range(4))
 		//     // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
 		//     .range(["#9986b3", "red", "green", "blue"]);
 
-		// qubitsvg.append("g").selectAll("path")
+		// entang.qubitsvg.append("g").selectAll("path")
 		//     .data(chord.groups)
 		//   .enter().append("path")
 		//     .style("fill", function(d) { return fill(d.index); })
@@ -121,7 +125,7 @@ var entang = {
 		//     .on("mouseover", entang.fade(.1))
 		//     .on("mouseout", entang.fade(1));
 
-		// qubitsvg.append("g")
+		// entang.qubitsvg.append("g")
 		//     .attr("class", "chord")
 		//   .selectAll("path")
 		//     .data(chord.chords)
@@ -142,15 +146,19 @@ var entang = {
 
 	Why does it start out as black?
 	*/
-	updateChord: function (qubitsvg, matrix) {
+	updateChord: function (matrix) {
 
-		var matrix = // matrix || 
+		// Need to figure out how to transition size
+		// Need to figure out how to... destroy or hide or scale
+		// down when 1 qubit or less
+
+		var matrix = matrix || 
 		[
-			  [100, 20, 30, 0],
-			  [20, 100, 0, 0],
-			  [30, 0, 100, 0],
-			  [0, 0, 0, 0],
-			];
+		  [100, 20, 30, 0],
+		  [20, 100, 0, 0],
+		  [30, 0, 100, 0],
+		  [0, 0, 0, 0],
+		];
 
 // Reshaped from http://stackoverflow.com/questions/21813723/change-and-transition-dataset-in-chord-diagram-with-d3
 		 /* Compute chord layout. */
@@ -158,7 +166,7 @@ var entang = {
 	    layout.matrix(matrix);
 
 	    /* Create/update "group" elements */
-	    var groupG = qubitsvg.selectAll("g.chord-sec")
+	    var groupG = entang.qubitsvg.selectAll("g.chord-sec")
 	        .data(layout.groups(), function (d) {
 	            return d.index; 
 	            //use a key function in case the 
@@ -167,15 +175,13 @@ var entang = {
 
 	    groupG.exit()
 	        .transition()
-	            .duration(1500)
+	            .duration(entang.animTime)
 	            .attr("opacity", 0)
 	            .remove(); //remove after transitions are complete
 
 	    // Colors
-// !!! Why are the paths starting out as colors? !!!
 		var fill = d3.scale.ordinal()
 		    .domain(d3.range(4))
-		    // .range(["#000000", "#FFDD89", "#957244", "#F26223"]);
 		    .range(["#9986b3", "red", "green", "blue"]);
 
         var newGroups = groupG.enter().append("g")
@@ -199,14 +205,14 @@ var entang = {
 		//update the paths to match the layout
 	    groupG.select("path") 
 	        .transition()
-	            .duration(1500)
+	            .duration(entang.animTime)
 	            // .attr("opacity", 0.5) //optional, just to observe the transition
 	        .attrTween("d", entang.arcTween( entang.prevLayout ))
 	            // .transition().duration(100).attr("opacity", 1) //reset opacity
 	        ;
 
 	     /* Create/update the chord paths */
-	    var chordPaths = qubitsvg.selectAll("path.chord")
+	    var chordPaths = entang.qubitsvg.selectAll("path.chord")
 	        .data(layout.chords(), entang.chordKey );
 	        	// ~~~ What this mean, yo?
 	            //specify a key function to match chords
@@ -219,14 +225,19 @@ var entang = {
 
 	    //handle exiting paths:
 	    chordPaths.exit().transition()
-	        .duration(1500)
+	        .duration(entang.animTime)
 	        .attr("opacity", 0)
 	        .remove();
 
+// put hide here
+		entang.hideOwn();
+
+// !!! This is what's causing the black somehow !!!
 	    //update the path shape
 	    chordPaths.transition()
-	        .duration(1500)
+	        .duration(entang.animTime)
 	        // .attr("opacity", 0.5) //optional, just to observe the transition
+	        // Changing the colors here doesn't fix it
 	        .style("fill", function(d) { return fill(d.source.index); })
 		    .style("stroke", function(d) { return fill(d.source.index); })
 	        .attrTween("d", entang.chordTween(entang.prevLayout))
@@ -356,6 +367,7 @@ var entang = {
 	        .style("opacity", opacity);
 	  };
 	},
+	// filter(function(dat) {dat.target.index != dat.target.subindex;})
 
 	// *** Custom for qromp *** //
 	hideOwn: function () {
@@ -370,3 +382,10 @@ var entang = {
 	},
 
 }
+
+// Declare qubitsvg inside the update function [that makes it]
+// appear in the top left corner for some reason
+// Make self-referencing chords transparent at the start
+// Make another circle of sections that will always be the same size
+// Change the amount of entanglement possible by adding padding to
+// the qubit section that is only partially entanglable
