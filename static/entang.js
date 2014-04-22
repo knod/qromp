@@ -158,7 +158,7 @@ var entang = {
 	    layout.matrix(matrix);
 
 	    /* Create/update "group" elements */
-	    var groupG = qubitsvg.selectAll("g.entang")
+	    var groupG = qubitsvg.selectAll("g.chord-sec")
 	        .data(layout.groups(), function (d) {
 	            return d.index; 
 	            //use a key function in case the 
@@ -172,7 +172,6 @@ var entang = {
 	            .remove(); //remove after transitions are complete
 
 	    // Colors
-// !!! Why are the paths not accessing colors? Had to use .source !!!
 // !!! Why are the paths starting out as colors? !!!
 		var fill = d3.scale.ordinal()
 		    .domain(d3.range(4))
@@ -180,13 +179,13 @@ var entang = {
 		    .range(["#9986b3", "red", "green", "blue"]);
 
         var newGroups = groupG.enter().append("g")
-	        .attr("class", "entang");
+	        .attr("class", "chord-sec");
 
 		//create the arc paths and set the constant attributes
 	    //(those based on the group index, not on the value)
 		newGroups.append("path")
 		    .attr("id", function (d) {
-	            return "entang" + d.index;
+	            return "chord-sec" + d.index;
 	            //using d.index and not i to maintain consistency
 	            //even if groups are sorted
 	        })
@@ -346,10 +345,13 @@ var entang = {
 	// Returns an event handler for fading a given chord group.
 	fade: function (opacity) {
 	  return function(g, indx) {
-	    svg.selectAll(".chord path")
-	        .filter(function(dat) { return dat.source.index != indx && dat.target.index != indx
+	    d3.selectAll(".chord")
+	        .filter(function(dat) {
+	        	return dat.source.index != indx
+	        	&& dat.target.index != indx
 	        	// Added by knod to keep own chords hidden (for qromp)
-	        	&& dat.target.index != dat.target.subindex; })
+	        	&& dat.target.index != dat.target.subindex; 
+	        })
 	      .transition()
 	        .style("opacity", opacity);
 	  };
@@ -358,7 +360,7 @@ var entang = {
 	// *** Custom for qromp *** //
 	hideOwn: function () {
 		// Unless the path crosses to somewhere, it's opacity will be 0
-		d3.selectAll(".chord path")
+		d3.selectAll(".chord")
 			// Get the paths whose index and subindex match
 			// (the path is refering to its own section)
 			.filter(function (dat) {
