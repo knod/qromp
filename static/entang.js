@@ -33,6 +33,8 @@ var entang = {
 	, partEntangElem: null
 	, oldFullLayout: null
 	, oldPartLayout: null
+	// For labels
+	, innerRadius: null
 
 	/* (str, num, int) -> None
 
@@ -52,19 +54,19 @@ var entang = {
 		entang.firstOuterRadius = firstOuterRadius;
 		entang.animTime = animTime;
 		// * This is used to establish the next object variable
-		var innerRadius = firstOuterRadius/1.1;
+		entang.innerRadius = firstOuterRadius/1.1;
 		// It's a pain that this doesn't look like a function now, but later
 		// does - I think the function just changes values?
 		// Sources (3): create the arc path data generator for the groups
 		// What are the groups? There are lots of groups! Are these groups
 		// of bridges? Or sections around the circle? What?
 		entang.arcForGroups = d3.svg.arc()
-			.innerRadius(innerRadius)
-			.outerRadius(firstOuterRadius);
+			.innerRadius(entang.innerRadius)
+			.outerRadius(entang.firstOuterRadius);
 
 		// Sources (3): create the chord path data generator for the chords
 		// What are we calling chords? Seen chord used for different things
-		entang.pathForChords = d3.svg.chord().radius(innerRadius);
+		entang.pathForChords = d3.svg.chord().radius(entang.innerRadius);
 
 		// Element that will show partial entanglement and the "bridges"/chords
 		entang.partEntangElem = entang.attachChord("entang part-entang", center, 0);
@@ -98,6 +100,8 @@ var entang = {
 			, fullEntangElem = entang.fullEntangElem
 			, partEntangElem = entang.partEntangElem
 		;
+
+		// Needed for label spacing unless we can do this in qubits instead...
 
 		var newNumQubits = newEntangMatrix.length
 			// Padding between the full entanglement arcs (using newNumQubits and mapping)
@@ -240,6 +244,8 @@ var entang = {
 		same as the top part of updatePart(). Has no chords/bridges.
 		*/
 		function updateFull () {
+
+		// *** SAME AS updatePart() (different variables) *** \\
 			var newFullMatrix = entang.newFullEntangMatrix(newNumQubits);
 			// (need this var later)
 			var newFullLayout = entang.setupChords(newFullMatrix, fullPadArray);
@@ -266,6 +272,46 @@ var entang = {
 				.attrTween("d", entang.arcTween( entang.oldFullLayout ))
 			;
 
+		// // *** JUST IN updateFull() *** \\
+		// 	// Arrays don't take much memory, make it here for clarity
+		// 	var qArcLabels = ["A", "B", "C", "D", "E", "F", "G",
+		// 			"H", "I", "J", "K", "L", "M", "N", "O", "P"]
+
+		// 	//create the group labels
+		// 	newGroups.append("svg:text")
+		// 		.attr("xlink:href", function (d) {
+		// 		    return "#group" + d.index;
+		// 		})
+		// 		// Maybe put these attributes in the css
+		// 		.attr("class", "q-label")
+		// 		.attr({"font-size": "2.3em"})
+		// 		// Offset to put label in center of arc? Why .35em?
+		// 		.attr("dy", ".35em")
+		// 		.attr("color", "#424242")
+		// 		.text(function (d) {
+		// 			return qArcLabels[d.index];
+		// 		});
+
+		// 	//position group labels to match layout
+		// 	groupG.select("text")
+		// 		.transition()
+		// 			.duration(entang.animTime)
+		// 			.attr("transform", function(d) {
+		// 				d.angle = (d.startAngle + d.endAngle) / 2;
+		// 				//store the midpoint angle in the data object
+
+		// 				return "rotate(" + (d.angle * 180 / Math.PI - 90) + ")" +
+		// 					" translate(" + (entang.innerRadius + 26) + ")" + 
+		// 					(d.angle > Math.PI ? " rotate(180)" : " rotate(0)")
+		// 					; 
+		// 				//include the rotate zero so that transforms can be interpolated
+		// 			})
+		// 			// .attr("transform", function(d) { return "rotate(" + ( -(d.angle * 180 / Math.PI - 90)) + ")"})
+		// 			.attr("text-anchor", function (d) {
+		// 				return d.angle > Math.PI ? "end" : "begin";
+		// 			});
+
+		// *** SAME AS updatePart() (different variables) *** \\
 			entang.oldFullLayout = newFullLayout; //save for next update
 		}  // end updateFull()
 
