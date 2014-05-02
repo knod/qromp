@@ -7,7 +7,7 @@
 
 function VisualizerObject(containerID) {
 	var container = d3.select("#" + containerID),
-		margin = .9,
+		margin = .8,
 		qubitScale = .4,
 		animTime = 500;
 	// Must put in new version
@@ -44,7 +44,6 @@ function VisualizerObject(containerID) {
 		}
 
 	// --- QUBITS --- //
-	console.log(qubitStates);
 		var qubits = container.selectAll(".qubit").data(qubitStates);
 		
 		// Add qubits if necessary
@@ -83,132 +82,36 @@ function VisualizerObject(containerID) {
 			return center + rotate + translate + straighten;
 		}
 
-
-	// // --- QUBITS AND LABELS EXPERIMENT --- \\
-	// 	var qLabelArray = ["A", "B", "C", "D", "E", "F", "G",
-	// 			"H", "I", "J", "K", "L", "M", "N", "O", "P"]
-
-	// 	var qubits = container.selectAll(".qubit").data(qubitStates);
-		
-	// 	// Add qubits if necessary
-	// 	qubits.enter().append("g")
-	// 			.attr("class", "qubit")
-	// 			.attr("transform", function(d, i) { return positionQubit(i) + "scale(0)"})
-	// 		.append("circle")
-	// 			.attr("class", "qubit-back")
-	// 	;
-
-	// 	// Add labels
-	// 	qubits
-	// 		.append("text")
-	// 			.attr("class", "q-label")
-	// 			.attr({"font-size": "2.3em"})
-	// 			.attr("color", "#424242")
-	// 			.attr("dy", -(qubitRadius + 10))
-	// 			.text(function(dat, indx) { 
-	// 				console.log(indx);
-	// 				return qLabelArray[indx]; })
-	// 	;
-
-	// 	// Update qubit arrangement
-	// 	qubits.transition()
-	// 		.duration(animTime)
-	// 		.attr("transform", function(d, i) { return positionQubit(i) + "scale(1)" });
-
-	// 	// Update each qubit-back
-	// 	qubits.select(".qubit-back").transition()
-	// 		.duration(animTime)
-	// 		.attr("r", qubitRadius);
-		
-	// 	// Remove qubits if necessary
-	// 	qubits.exit().transition()
-	// 		.duration(animTime)
-	// 		.attr("transform", function(d, i) { return positionQubit(i, true) + "scale(0)" })
-	// 		.remove();
-
-	// 	// Return a string with all of the appropriate transformations
-	// 		// "remove" is a boolean used to indicate whether the transformed qubit is being removed
-	// 	function positionQubit(index, remove) {
-	// 		var realNumQubits = (remove) ? index + 1 : numQubits,
-	// 			rotateDeg = 360 / realNumQubits,
-	// 			center = "translate(" + (containerWidth / 2) + ", " + ((containerHeight / 2) + yOffset / 2) + ")",
-	// 			rotate = "rotate(" + (rotateDeg * index) + ")",
-	// 			translate = "translate(0, -" + arrangeRadius + ")"
-	// 			straighten = "rotate(-" + (rotateDeg * index) + ")";
-
-	// 		return center + rotate + translate + straighten;
-	// 	}
-
-
 	// --- LABELS --- \\
-
-		var qLabels = container.selectAll(".q-label").data(qubitStates);
-
 		var qLabelArray = ["A", "B", "C", "D", "E", "F", "G",
 			"H", "I", "J", "K", "L", "M", "N", "O", "P"]
+
+		var qLabels = container.selectAll(".q-label").data(qubitStates);
 		
 		// Add qubit labels if necessary
 		qLabels.enter().append("svg:text")
-			// .attr("xlink:href", function (d) {
-			//     return "#label" + d.index;
-			// })
+			// .attr("xlink:href", function (dat, indx) { return "#label" + indx; })  // Huh?
 			// Maybe put these attributes in the css
-			.attr("class", "q-label")
-			.attr("font-size", "2.3em")
-			// Offset to put label in center of arc? Why .35em?
-			.attr("dy", ".35em")
-			.attr("color", "#424242")
-			.text(function (d, i) {
-				console.log(this);
-				return qLabelArray[i];})
-			.attr("transform", function(d, i) { return positionLabel(i)  + "scale(0)"})
+			.attr({"class": "q-label"
+				, "font-size": "2.3em", "color": "#424242"
+				, "dy": ".35em", "dx": "-.35em"})
+			.text(function (dat, indx) { return qLabelArray[indx]; })
+			.attr("transform", function(dat, indx) { return positionLabel(indx)  + "scale(0)"})
 			;
 
 		// Update qubit label arrangement
 		qLabels.transition()
 			.duration(animTime)
-			.attr("transform", function(d, i) { return positionLabel(i) + "scale(1)" });
+			.attr("transform", function (dat, indx) { return positionLabel(indx) + "scale(1)" });
 		
 		// Remove qubit labels if necessary
 		qLabels.exit().transition()
 			.duration(animTime)
-			.attr("transform", function(d, i) { return positionLabel(i, true) + "scale(0)" })
+			.attr("transform", function (dat, indx) { return positionLabel(indx, true) + "scale(0)" })
 			.remove();
 
-		// // console.log(newQubits);
-		// console.log(container.selectAll(".qubit"));
-		// var qLabelArray = ["A", "B", "C", "D", "E", "F", "G",
-		// 	"H", "I", "J", "K", "L", "M", "N", "O", "P"]
-		
-		// // Add labels to any new qubits
-		// qubits.append("text")
-		// 	.attr("xlink:href", function (d) {
-		// 	    return "#group" + d.index;
-		// 	})
-		// 	// Maybe put these attributes in the css
-		// 	.attr("class", "q-label")
-		// 	.attr({"font-size": "2.3em"})
-		// 	// Offset to put label in center of arc? Why .35em?
-		// 	.attr("dy", ".35em")
-		// 	.attr("color", "#424242")
-		// 	.text(function (d) {return qLabelArray[d.index];})
-
-		// 	.attr("transform", "translate(" + qubitRadius + ")")
-		// ;
-
-		// // Update label arrangement
-		// // qLabels.transition()
-		// // 	.duration(animTime)
-		// // 	.attr("transform", function(d, i) { return positionLabel(i) + "scale(1)" });
-		
-		// // // Remove labels if necessary? Or will they be removed with the qubit?
-		// // qubits.exit().transition()
-		// // 	.duration(animTime)
-		// // 	.attr("transform", function(d, i) { return positionLabel(i, true) + "scale(0)" })
-		// // 	.remove();
-
 		// Return a string with all of the appropriate transformations
-			// "remove" is a boolean used to indicate whether the transformed qubit is being removed
+			// "remove" is a boolean used to indicate whether the transformed label is being removed
 		function positionLabel(index, remove) {
 			var realNumQubits = (remove) ? index + 1 : numQubits,
 				rotateDeg = 360 / realNumQubits,
