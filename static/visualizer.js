@@ -25,7 +25,7 @@ function VisualizerObject(containerID) {
 			arrangeRadius = 0,
 			yOffset = 0;
 		// For labels? Doing them in here would be better if I could
-		var labelRadius = arrangeRadius + qubitRadius;
+		var labelRadius = arrangeRadius + qubitRadius + 125;
 		// Let's take care of label color, padding, etc, in attr
 
 
@@ -44,6 +44,7 @@ function VisualizerObject(containerID) {
 		}
 
 	// --- QUBITS --- //
+	console.log(qubitStates);
 		var qubits = container.selectAll(".qubit").data(qubitStates);
 		
 		// Add qubits if necessary
@@ -141,7 +142,7 @@ function VisualizerObject(containerID) {
 
 	// --- LABELS --- \\
 
-		var qLabels = container.selectAll(".q-labels").data(data);
+		var qLabels = container.selectAll(".q-label").data(qubitStates);
 
 		var qLabelArray = ["A", "B", "C", "D", "E", "F", "G",
 			"H", "I", "J", "K", "L", "M", "N", "O", "P"]
@@ -158,7 +159,7 @@ function VisualizerObject(containerID) {
 			.attr("dy", ".35em")
 			.attr("color", "#424242")
 			.text(function (d, i) {
-				console.log(i);
+				console.log(this);
 				return qLabelArray[i];})
 			.attr("transform", function(d, i) { return positionLabel(i)  + "scale(0)"})
 			;
