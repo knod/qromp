@@ -103,7 +103,7 @@ $(document).ready(function() {
 	})
 
 	// --- Set editor to example text --- \\
-	$(".example").on("click", function (evt) {
+	$(document).on("click", ".example", function (evt) {
 		editor.getSession().setValue($(this).text());
 	});
 
